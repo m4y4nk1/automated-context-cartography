@@ -1,0 +1,124 @@
+.export {
+  position: relative;
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--accent-lime);
+  border: 1px solid var(--accent-lime);
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 3px 9px rgba(8, 127, 120, 0.18);
+  transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+}
+
+.export-btn:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  box-shadow: 0 5px 14px rgba(8, 127, 120, 0.22);
+  transform: translateY(-1px);
+}
+
+.export-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.export-btn:focus-visible {
+  outline: 3px solid rgba(8, 127, 120, 0.2);
+  outline-offset: 2px;
+}
+
+.export-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.action-icon {
+  flex: 0 0 auto;
+}
+
+.action-icon--spin {
+  animation: action-icon-spin 0.8s linear infinite;
+}
+
+.export-caret {
+  flex: 0 0 auto;
+  transition: transform 0.18s ease;
+}
+
+.export-caret.is-open {
+  transform: rotate(180deg);
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 50;
+  min-width: 180px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 7px;
+  box-shadow: 0 14px 36px rgba(26, 51, 48, 0.16);
+  animation: export-menu-in 0.16s ease-out;
+}
+
+.export-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #314147;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.export-item-icon {
+  flex: 0 0 auto;
+  color: var(--accent-lime);
+  transition: color 0.15s;
+}
+
+.export-item:hover .export-item-icon {
+  color: var(--accent-strong);
+}
+
+.export-item:hover {
+  background: var(--accent-soft);
+  color: var(--accent-lime);
+}
+
+.export-item:focus-visible {
+  outline: 2px solid var(--accent-lime);
+  outline-offset: -2px;
+}
+
+@keyframes export-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes action-icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+

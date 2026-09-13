@@ -1,0 +1,139 @@
+.insights-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.insights-label {
+  margin: 16px 0 8px;
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #5f7075;
+}
+
+.insights-label:first-child {
+  margin-top: 0;
+}
+
+.insights-gap-summary {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--muted-text);
+}
+
+.ai-box {
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #eff8f6;
+  border: 1px solid #cbe7e2;
+  border-radius: 7px;
+  padding: 13px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  scrollbar-gutter: stable;
+  box-sizing: border-box;
+  color: var(--panel-text);
+  box-shadow: inset 3px 0 0 var(--accent-lime);
+}
+
+.ai-box-muted,
+.stat-muted {
+  opacity: 0.6;
+}
+
+.stat-muted {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-box-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.75;
+}
+
+.ai-box-error,
+.stat-error {
+  color: #b54835;
+  font-size: 13px;
+}
+
+.ai-box-spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(8, 127, 120, 0.18);
+  border-top-color: var(--accent-lime);
+  border-radius: 50%;
+  animation: insights-spin 0.8s linear infinite;
+}
+
+@keyframes insights-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #f7f9f8;
+  border-left: 3px solid var(--panel-border);
+  transition: transform 0.16s, box-shadow 0.16s;
+}
+
+.stat-row:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(26, 51, 48, 0.07);
+}
+
+.stat-row b {
+  font-weight: 700;
+}
+
+.stat-row--gap {
+  border-left-color: #d85c45;
+  background: #fff3f0;
+}
+
+.stat-row--eol {
+  border-left-color: #d59032;
+  background: #fff8e9;
+}
+
+.stat-row--spof {
+  border-left-color: #d4a800;
+  background: #fffbea;
+}
+
+.stat-row--ok {
+  border-left-color: #209b78;
+  background: #edf8f4;
+}
+
+.stat-row--orphan {
+  border-left-color: #8b8f98;
+  background: #f2f4f5;
+}
+

@@ -1,0 +1,184 @@
+.architecture-health {
+  --health-color: #087f78;
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 7px;
+}
+
+.architecture-health--watch {
+  --health-color: #b7791f;
+}
+
+.architecture-health--risk {
+  --health-color: #c4513b;
+}
+
+.architecture-health-toggle {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 38px 16px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  color: var(--panel-text);
+  text-align: left;
+  background: #f8faf9;
+  border: 0;
+  cursor: pointer;
+}
+
+.architecture-health-toggle:hover {
+  background: #f1f7f5;
+}
+
+.architecture-health-toggle:focus-visible,
+.architecture-health-risk:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--health-color) 22%, transparent);
+  outline-offset: -3px;
+}
+
+.architecture-health-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: var(--health-color);
+  background: color-mix(in srgb, var(--health-color) 10%, white);
+  border-radius: 5px;
+}
+
+.architecture-health-title {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.architecture-health-title strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.architecture-health-title small {
+  color: var(--muted-text);
+  font-size: 10px;
+}
+
+.architecture-health-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--health-color);
+  font-size: 11px;
+  font-weight: 800;
+  background:
+    radial-gradient(circle, #ffffff 56%, transparent 58%),
+    conic-gradient(var(--health-color) var(--health-score), #dfe8e5 0);
+  border-radius: 50%;
+}
+
+.architecture-health-chevron {
+  color: var(--muted-text);
+  transition: transform 160ms ease;
+}
+
+.architecture-health-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.architecture-health-body {
+  padding: 9px 10px 10px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.architecture-health-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.architecture-health-summary strong {
+  color: var(--health-color);
+  font-size: 11px;
+}
+
+.architecture-health-summary span,
+.architecture-health-message {
+  color: var(--muted-text);
+  font-size: 10px;
+}
+
+.architecture-health-risks {
+  display: flex;
+  max-height: 116px;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+}
+
+.architecture-health-risk {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 5px 6px;
+  color: #52656a;
+  font-size: 10.5px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.architecture-health-risk:hover,
+.architecture-health-risk.is-active {
+  color: var(--health-color);
+  background: color-mix(in srgb, var(--health-color) 9%, white);
+}
+
+.architecture-health-risk span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.architecture-health-risk strong {
+  min-width: 18px;
+  text-align: right;
+}
+
+.architecture-health-message {
+  margin: 0;
+  padding: 5px 0;
+}
+
+.architecture-health-message--clear {
+  color: #087f78;
+}
+
+@media (max-width: 680px) {
+  .architecture-health-body {
+    display: none;
+  }
+
+  .architecture-health-toggle {
+    padding-block: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .architecture-health-chevron {
+    transition: none;
+  }
+}

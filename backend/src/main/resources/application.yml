@@ -1,0 +1,233 @@
+spring:
+  application:
+    name: context-cartography
+  main:
+    # Keep Spring MVC (Tomcat) as the server even though WebFlux's WebClient is on the classpath.
+    web-application-type: servlet
+  servlet:
+    multipart:
+      # Framework defaults (1MB file / 10MB request) are too small for a modified/expanded
+      # dataset workbook (the participant guide explicitly anticipates judges running a larger,
+      # modified copy). GlobalExceptionHandler turns an oversized upload into a clean 413.
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+# --- EA ingestion configuration -------------------------------------------
+# One shared, config-driven column mapping is reused by the JSON, CSV and Excel
+# parsers. Rename source columns/fields (right-hand side) without touching code.
+# The left-hand keys are canonical model field names and must not change.
+#
+# `businessProcess` and `processMapping` intentionally share one physical table
+# (the `BusinessProcesses` sheet/array/file is a process-to-application mapping
+# row per record; the process itself repeats across its supporting apps' rows
+# and is de-duplicated by id when accumulated).
+ea:
+  ingestion:
+    # Heuristic table detection. A sheet/array/file is bound to an entity by its
+    # configured name first; otherwise by header signature above min-confidence.
+    matching:
+      min-confidence: 0.5
+      header-scan-rows: 25
+      signature-sample-size: 25
+      # Metadata tables that never contain entity rows.
+      skip-tables:
+        - README
+        - AnswerKey
+        - GapAnalysis
+        - LifecycleValues
+        - metadata
+        - Notes
+
+    # Shared per-entity mapping: canonicalModelField -> sourceColumn
+    # (JSON property, CSV header, or Excel column header). Scalar values only;
+    # additional accepted spellings live under `aliases`.
+    fields:
+      application:
+        id: ApplicationID
+        name: ApplicationName
+        description: Description
+        businessDomain: BusinessDomain
+        businessCriticality: BusinessCriticality
+        lifecycleStatus: LifecycleStatus
+        lifecycleStartDate: LifecycleStartDate
+        lifecycleEndDate: LifecycleEndDate
+        hosting: Hosting
+        vendorType: VendorType
+        ownerEmployeeId: OwnerEmployeeID
+        costCenter: CostCenter
+      relationship:
+        id: RelationshipID
+        sourceApplicationId: SourceApplicationID
+        relationshipType: RelationshipType
+        targetApplicationId: TargetApplicationID
+        dependencyCriticality: DependencyCriticality
+      interface:
+        id: InterfaceID
+        name: InterfaceName
+        providerApplicationId: ProviderApplicationID
+        consumerApplicationId: ConsumerApplicationID
+        protocol: Protocol
+        dataFormat: DataFormat
+        frequency: Frequency
+        interfaceStatus: InterfaceStatus
+      informationObject:
+        id: FlowID
+        informationObject: InformationObject
+        classification: Classification
+        sourceApplicationId: SourceApplicationID
+        targetApplicationId: TargetApplicationID
+        operation: Operation
+        interfaceId: InterfaceID
+      businessProcess:
+        id: BusinessProcessID
+        name: BusinessProcessName
+        processDomain: ProcessDomain
+      processMapping:
+        id: ProcessMappingID
+        businessProcessId: BusinessProcessID
+        supportingApplicationId: SupportingApplicationID
+        roleOfApplication: RoleOfApplication
+        processCriticality: ProcessCriticality
+      applicationOwnership:
+        id: OwnershipID
+        applicationId: ApplicationID
+        applicationOwner: ApplicationOwner
+        ownerEmployeeId: OwnerEmployeeID
+        systemCustodian: SystemCustodian
+        businessOwner: BusinessOwner
+        supportGroup: SupportGroup
+        department: Department
+      dataQualityGap:
+        id: GapID
+        gapType: GapType
+        entityType: EntityType
+        entityId: EntityID
+        relatedApplicationId: RelatedApplicationID
+        description: Description
+        severity: Severity
+
+    # Accepted source-column aliases per entity/model field. Matching is
+    # normalized (case/space/underscore/camelCase-insensitive), so these seed
+    # the resolver for CSV/JSON equivalents and arbitrary EA-like files alike,
+    # on top of the exact Excel headers already listed under `fields`.
+    aliases:
+      application:
+        id: [ApplicationID, applicationId, appId, application_id, id]
+        name: [ApplicationName, applicationName, appName, application_name, name]
+        description: [Description, description]
+        businessDomain: [BusinessDomain, businessDomain, domain]
+        businessCriticality: [BusinessCriticality, businessCriticality, criticality]
+        lifecycleStatus: [LifecycleStatus, lifecycleStatus, lifecycle, status]
+        lifecycleStartDate: [LifecycleStartDate, lifecycleStartDate]
+        lifecycleEndDate: [LifecycleEndDate, lifecycleEndDate]
+        hosting: [Hosting, hosting, hostingModel]
+        vendorType: [VendorType, vendorType]
+        ownerEmployeeId: [OwnerEmployeeID, ownerEmployeeId]
+        costCenter: [CostCenter, costCenter]
+      relationship:
+        id: [RelationshipID, relationshipId, id]
+        sourceApplicationId: [SourceApplicationID, sourceApplicationId, sourceAppId]
+        relationshipType: [RelationshipType, relationshipType, type]
+        targetApplicationId: [TargetApplicationID, targetApplicationId, targetAppId]
+        dependencyCriticality: [DependencyCriticality, dependencyCriticality, criticality]
+      interface:
+        id: [InterfaceID, interfaceId, id]
+        name: [InterfaceName, interfaceName, name]
+        providerApplicationId: [ProviderApplicationID, providerApplicationId, providerId, provider]
+        consumerApplicationId: [ConsumerApplicationID, consumerApplicationId, consumerId, consumer]
+        protocol: [Protocol, protocol, type]
+        dataFormat: [DataFormat, dataFormat, format]
+        frequency: [Frequency, frequency]
+        interfaceStatus: [InterfaceStatus, interfaceStatus, status]
+      informationObject:
+        id: [FlowID, flowId, id]
+        informationObject: [InformationObject, informationObject, name, dataObject]
+        classification: [Classification, classification]
+        sourceApplicationId: [SourceApplicationID, sourceApplicationId, sourceAppId]
+        targetApplicationId: [TargetApplicationID, targetApplicationId, targetAppId]
+        operation: [Operation, operation]
+        interfaceId: [InterfaceID, interfaceId]
+      businessProcess:
+        id: [BusinessProcessID, businessProcessId, id]
+        name: [BusinessProcessName, businessProcessName, name]
+        processDomain: [ProcessDomain, processDomain, businessArea]
+      processMapping:
+        id: [ProcessMappingID, processMappingId, id]
+        businessProcessId: [BusinessProcessID, businessProcessId]
+        supportingApplicationId: [SupportingApplicationID, supportingApplicationId, applicationId]
+        roleOfApplication: [RoleOfApplication, roleOfApplication, role]
+        processCriticality: [ProcessCriticality, processCriticality, criticality]
+      applicationOwnership:
+        id: [OwnershipID, ownershipId, id]
+        applicationId: [ApplicationID, applicationId, appId]
+        applicationOwner: [ApplicationOwner, applicationOwner, owner]
+        ownerEmployeeId: [OwnerEmployeeID, ownerEmployeeId]
+        systemCustodian: [SystemCustodian, systemCustodian, custodian]
+        businessOwner: [BusinessOwner, businessOwner]
+        supportGroup: [SupportGroup, supportGroup]
+        department: [Department, department]
+      dataQualityGap:
+        id: [GapID, gapId, id]
+        gapType: [GapType, gapType, type]
+        entityType: [EntityType, entityType]
+        entityId: [EntityID, entityId]
+        relatedApplicationId: [RelatedApplicationID, relatedApplicationId]
+        description: [Description, description]
+        severity: [Severity, severity]
+
+    # JSON: entity type -> top-level array name. `businessProcess` and
+    # `processMapping` intentionally share the same array (see note above).
+    json:
+      arrays:
+        application: applications
+        relationship: relationships
+        interface: interfaces
+        informationObject: informationObjects
+        businessProcess: businessProcesses
+        processMapping: businessProcesses
+        applicationOwnership: applicationOwnerships
+        dataQualityGap: dataQualityGaps
+
+    # Excel: entity type -> worksheet name. `businessProcess` and
+    # `processMapping` intentionally share the same sheet (see note above).
+    excel:
+      sheets:
+        application: Applications
+        relationship: Relationships
+        interface: Interfaces
+        informationObject: InformationObjects
+        businessProcess: BusinessProcesses
+        processMapping: BusinessProcesses
+        applicationOwnership: ApplicationOwnership
+        dataQualityGap: KnownDataQualityGaps
+
+    # CSV: entity type -> file name (one file per entity, matched inside a
+    # ZIP). `businessProcess` and `processMapping` intentionally share the
+    # same file (see note above).
+    csv:
+      files:
+        application: applications.csv
+        relationship: relationships.csv
+        interface: interfaces.csv
+        informationObject: information_objects.csv
+        businessProcess: business_processes.csv
+        processMapping: business_processes.csv
+        applicationOwnership: application_ownership.csv
+        dataQualityGap: known_data_quality_gaps.csv
+
+  # --- Insight detectors ---------------------------------------------------
+  insight:
+    # Applications whose in-degree in the Relationships graph (how many other
+    # applications depend on them) exceeds this are flagged as hubs / potential
+    # single points of failure.
+    hotspot-degree-threshold: 5
+    # Whether duplicate-application-name grouping is case-sensitive.
+    duplicate-name-case-sensitive: false
+    # Optional lookahead window (days) for lifecycle-risk detectors that should
+    # also flag an imminent (not yet past) retirement date. 0 disables lookahead.
+    lifecycle-risk-lookahead-days: 0
+
+  # --- Sample dataset ------------------------------------------------------
+  sample:
+    # Auto-load the bundled JSON sample on startup.
+    autoload: true

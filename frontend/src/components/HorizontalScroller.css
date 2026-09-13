@@ -1,0 +1,65 @@
+.horizontal-scroller {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.horizontal-scroller.has-overflow {
+  grid-template-columns: 30px minmax(0, 1fr) 30px;
+  gap: 4px;
+}
+
+.horizontal-scroller-viewport {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.horizontal-scroller-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-scroller-content {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  min-width: 100%;
+}
+
+.horizontal-scroller-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: var(--accent-strong);
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(26, 51, 48, 0.1);
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+
+.horizontal-scroller-arrow:hover:not(:disabled) {
+  color: #ffffff;
+  background: var(--accent-lime);
+  border-color: var(--accent-lime);
+}
+
+.horizontal-scroller-arrow:focus-visible {
+  outline: 2px solid var(--accent-lime);
+  outline-offset: 2px;
+}
+
+.horizontal-scroller-arrow:disabled {
+  color: #a7b3b5;
+  background: #f3f6f5;
+  cursor: default;
+}

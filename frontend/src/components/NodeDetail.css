@@ -1,0 +1,153 @@
+.node-detail {
+  background: #f8faf9;
+  border: 1px solid var(--panel-border);
+  border-radius: 7px;
+  padding: 13px;
+  font-size: 13px;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.node-detail:not(.node-detail--empty):hover {
+  border-color: #b3d5cf;
+  box-shadow: 0 5px 16px rgba(26, 51, 48, 0.08);
+}
+
+.node-detail--empty {
+  opacity: 0.7;
+}
+
+.node-detail-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent-strong);
+  margin-bottom: 10px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--panel-border);
+}
+
+.detail-key {
+  color: var(--muted-text);
+}
+
+.detail-val {
+  text-align: right;
+  font-weight: 500;
+}
+
+.node-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.badge--gap {
+  background: #ffe1d9;
+  color: #8c301e;
+}
+
+.badge--eol {
+  background: #bd4939;
+  color: #fff;
+}
+
+.badge--spof {
+  background: #fff0ae;
+  color: #705700;
+}
+
+.badge--circular {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.badge--orphan-interface {
+  background: #e5e7eb;
+  color: #3f4a52;
+}
+
+.badge--unmapped {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.badge--broken-ref {
+  background: #dc2626;
+  color: #fff;
+}
+
+.badge--duplicate {
+  background: #ffe4cc;
+  color: #9a3f0c;
+}
+
+.badge--orphan {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.badge--lifecycle-risk {
+  background: #fef3c7;
+  color: #92610a;
+}
+
+.badge--deprecated-interface {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.badge--sensitive-flow,
+.badge--sensitive {
+  background: #be123c;
+  color: #fff;
+}
+
+/* --- Ownership sub-section --- */
+.node-detail-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.node-detail-subtitle {
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #5f7075;
+  margin-bottom: 6px;
+}
+
+.node-detail-empty-note {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted-text);
+}
+
+.node-detail-trace {
+  margin: 0 0 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--panel-text);
+}
+
+.node-detail-trace:last-child {
+  margin-bottom: 0;
+}
+

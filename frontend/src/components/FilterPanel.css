@@ -1,0 +1,155 @@
+.filter-panel[aria-disabled='true'] {
+  opacity: 0.55;
+}
+
+.filter-label {
+  margin: 16px 0 6px;
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #5f7075;
+}
+
+.filter-label:first-child {
+  margin-top: 0;
+}
+
+.filter-input {
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 10px;
+  font-size: 13px;
+  color: var(--panel-text);
+  background: #f8faf9;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+}
+
+.filter-input:hover:not(:disabled) {
+  border-color: #a9c4c0;
+  background: #ffffff;
+}
+
+.filter-input:focus-visible {
+  outline: none;
+  border-color: var(--accent-lime);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(8, 127, 120, 0.13);
+}
+
+select.filter-input option {
+  color: #17252b;
+}
+
+.filter-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 4px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: color 0.18s, background 0.18s;
+}
+
+.filter-check:hover {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.filter-check input {
+  accent-color: var(--accent-lime);
+  width: 16px;
+  height: 16px;
+}
+
+.filter-reset {
+  width: 100%;
+  margin-top: 14px;
+  min-height: 40px;
+  padding: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  border: 1px solid #b9ded8;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s;
+}
+
+.filter-reset:hover:not(:disabled) {
+  background: #d5eeea;
+  border-color: #83c7bd;
+  transform: translateY(-1px);
+}
+
+.filter-reset:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.filter-reset:disabled,
+.filter-input:disabled,
+.filter-check input:disabled {
+  cursor: not-allowed;
+}
+
+/* --- Collapsible group (e.g. Hosting), same interaction as ArchitectureHealth --- */
+.filter-collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.filter-collapse-toggle .filter-label {
+  margin: 0;
+}
+
+.filter-collapse-chevron {
+  color: var(--muted-text, #5f7075);
+  transition: transform 160ms ease;
+}
+
+.filter-collapse-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-collapse-chevron {
+    transition: none;
+  }
+}
+
+/* --- Application-matrix filter group --- */
+.filter-matrix {
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.filter-matrix > div:first-of-type .filter-label {
+  margin-top: 6px;
+}
+
+.filter-section {
+  margin: 18px 0 2px;
+  padding-bottom: 5px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #087f78;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.filter-section:first-child {
+  margin-top: 0;
+}

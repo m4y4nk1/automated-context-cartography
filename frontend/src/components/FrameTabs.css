@@ -1,0 +1,80 @@
+.frame-tabs-scroller {
+  width: max-content;
+  max-width: 100%;
+}
+
+.frame-tabs {
+  gap: 2px;
+  padding: 4px;
+  background: #e8eeec;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.frame-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 13px;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 650;
+  color: #5b6b70;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.frame-tab:hover {
+  color: #17252b;
+  background: rgba(255, 255, 255, 0.82);
+  transform: translateY(-1px);
+}
+
+.frame-tab:focus-visible {
+  outline: 2px solid var(--accent-lime);
+  outline-offset: 2px;
+}
+
+.frame-tab--active {
+  color: #ffffff;
+  background: var(--accent-lime);
+  box-shadow: 0 2px 5px rgba(8, 127, 120, 0.24);
+  font-weight: 700;
+}
+
+.frame-tab--active:hover {
+  color: #ffffff;
+  background: var(--accent-strong);
+}
+
+.frame-tab:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.frame-tab-icon {
+  flex: 0 0 auto;
+  transition: transform 150ms ease;
+}
+
+.frame-tab:hover .frame-tab-icon,
+.frame-tab--active .frame-tab-icon {
+  transform: scale(1.08);
+}
+
+@media (max-width: 680px) {
+  .frame-tab {
+    padding-inline: 8px;
+  }
+
+  .frame-tab span {
+    display: none;
+  }
+}
+

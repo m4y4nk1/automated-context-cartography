@@ -1,0 +1,423 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.vw:context-cartography >---------------------
+[INFO] Building context-cartography 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.5:run (default-cli) > test-compile @ context-cartography >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ context-cartography ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ context-cartography ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ context-cartography ---
+[INFO] skip non existing resourceDirectory C:\Users\A9O64S8\Downloads\imobilothon\context-cartography (1)\context-cartography\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ context-cartography ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.3.5:run (default-cli) < test-compile @ context-cartography <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.5:run (default-cli) @ context-cartography ---
+[INFO] Attaching agents: []
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF8
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-09-10T21:07:25.151+05:30  INFO 35480 --- [context-cartography] [           main] com.vw.eacontext.EaContextApplication    : Starting EaContextApplication using Java 21.0.10 with PID 35480 (C:\Users\A9O64S8\Downloads\imobilothon\context-cartography (1)\context-cartography\backend\target\classes started by A9O64S8 in C:\Users\A9O64S8\Downloads\imobilothon\context-cartography (1)\context-cartography\backend)
+2026-09-10T21:07:25.153+05:30  INFO 35480 --- [context-cartography] [           main] com.vw.eacontext.EaContextApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-09-10T21:07:26.118+05:30  INFO 35480 --- [context-cartography] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-09-10T21:07:26.129+05:30  INFO 35480 --- [context-cartography] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-10T21:07:26.129+05:30  INFO 35480 --- [context-cartography] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-09-10T21:07:26.187+05:30  INFO 35480 --- [context-cartography] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-09-10T21:07:26.188+05:30  INFO 35480 --- [context-cartography] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 995 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-09-10T21:07:26.756+05:30  INFO 35480 --- [context-cartography] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-09-10T21:07:26.761+05:30  INFO 35480 --- [context-cartography] [           main] com.vw.eacontext.EaContextApplication    : Started EaContextApplication in 1.991 seconds (process running for 2.386)
+2026-09-10T21:07:28.517+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.521+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.521+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.521+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.522+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.523+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.523+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.524+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.524+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.525+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.525+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.525+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.526+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.526+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.527+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.527+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.527+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.528+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.528+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.528+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.529+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.529+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.530+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.531+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.531+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.532+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.532+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.532+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.533+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.533+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.534+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.534+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.535+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.535+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.535+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.536+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.536+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.536+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.537+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.537+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.537+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.538+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.538+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.538+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.538+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.540+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.541+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.541+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.541+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.542+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.542+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.542+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.543+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.543+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.543+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.544+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.544+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.544+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.545+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.545+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.546+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.546+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.547+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.547+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.547+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.547+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.548+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.548+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.549+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.549+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.549+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.550+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.550+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.550+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.551+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.551+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.551+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.552+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.552+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.552+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.553+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.553+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.553+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.554+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.554+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.554+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.554+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.555+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.555+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.555+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.555+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.556+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.557+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.557+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.558+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.558+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.558+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.559+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.559+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.559+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.560+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.560+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.561+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.561+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.562+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.563+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.564+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.564+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.565+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.565+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.565+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.565+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.566+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.567+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.567+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.568+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.568+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.569+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.569+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.569+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.570+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.570+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.570+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.571+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.571+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.572+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.572+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.573+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.573+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.573+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.574+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.574+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.575+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.575+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.575+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.576+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.576+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.576+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.576+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.578+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.578+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.578+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.579+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.579+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.579+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.580+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.580+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.580+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.581+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.581+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.582+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.582+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.582+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.583+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.583+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.584+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.584+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.585+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.585+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.585+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.586+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.586+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.587+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.588+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.588+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.589+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.589+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.590+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.590+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.590+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.591+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.591+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.592+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.592+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.593+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.593+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.593+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.594+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.594+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.595+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.596+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.596+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.596+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.597+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.597+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.597+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.597+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.598+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.598+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.598+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.598+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.599+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.599+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.599+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.600+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.600+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.600+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.601+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.601+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.601+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.601+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.602+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.602+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.602+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.602+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.603+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.603+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.604+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.604+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.604+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.606+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.607+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.607+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.608+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.608+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.609+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.609+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.609+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.610+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.610+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.610+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.611+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.611+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.612+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.612+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.613+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.613+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.614+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.614+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.615+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.615+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.616+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.616+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.616+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.617+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.617+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.618+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.618+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.619+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.619+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.620+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.620+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.621+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.621+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.621+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.622+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.622+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.622+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.622+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.624+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.624+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.625+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.625+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.625+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.626+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.627+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.627+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.627+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.628+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.628+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.629+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.629+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.629+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.630+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.630+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.630+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.631+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.631+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.632+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.632+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.632+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.633+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.633+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.634+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.634+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.635+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.635+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.636+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.637+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.637+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.637+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.637+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.639+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.639+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.640+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.640+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.641+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.641+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.642+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.642+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.643+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.643+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.643+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.643+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.644+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.644+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.645+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.645+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.646+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.646+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.647+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.647+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.647+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.648+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.648+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.649+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.649+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.650+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.650+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.651+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.652+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.652+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.653+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.654+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.654+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.655+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.655+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.656+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.656+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.656+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.656+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.657+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.657+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.657+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.658+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.658+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.658+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.658+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.659+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.659+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.660+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.660+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.660+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.660+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.660+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.661+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.662+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.662+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.662+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.663+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.663+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.664+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.664+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.664+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.665+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.665+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.665+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.665+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.666+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.667+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.667+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.667+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.667+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.668+05:30  WARN 35480 --- [context-cartography] [           main] c.v.e.ingestion.IngestionSupport         : Unknown interface type 'Message Queue'; leaving unset
+2026-09-10T21:07:28.813+05:30  INFO 35480 --- [context-cartography] [           main] c.v.e.ingestion.ExcelEaDataParser        : Parsed Excel EA dataset: 8 domains, 74 processes, 500 applications, 1800 interfaces, 120 information objects, 138 activities, 1200 instances, 7000 allocations
+2026-09-10T21:07:28.851+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-000211': unresolved provider 'APP-00478' or consumer 'null'
+2026-09-10T21:07:28.854+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-000422': unresolved provider 'APP-00455' or consumer 'null'
+2026-09-10T21:07:28.855+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-000633': unresolved provider 'APP-00432' or consumer 'null'
+2026-09-10T21:07:28.856+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-000844': unresolved provider 'APP-00409' or consumer 'null'
+2026-09-10T21:07:28.858+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-001055': unresolved provider 'APP-00386' or consumer 'null'
+2026-09-10T21:07:28.859+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-001266': unresolved provider 'APP-00363' or consumer 'null'
+2026-09-10T21:07:28.860+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-001477': unresolved provider 'APP-00340' or consumer 'null'
+2026-09-10T21:07:28.862+05:30  WARN 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Skipping interface 'IF-001688': unresolved provider 'APP-00317' or consumer 'null'
+2026-09-10T21:07:28.863+05:30  INFO 35480 --- [context-cartography] [           main] c.v.eacontext.graph.GraphBuilderService  : Built graph: 500 application node(s), 1792 interface edge(s)
+2026-09-10T21:07:28.890+05:30  INFO 35480 --- [context-cartography] [           main] c.vw.eacontext.insight.InsightService    : Insight analysis produced 5411 finding(s)
+2026-09-10T21:07:28.896+05:30  INFO 35480 --- [context-cartography] [           main] com.vw.eacontext.api.SessionModelStore   : Session loaded: 500 applications, 1792 interfaces, 5411 findings
+2026-09-10T21:07:28.896+05:30  INFO 35480 --- [context-cartography] [           main] c.v.eacontext.api.SampleDataInitializer  : Auto-loaded application matrix workbook 'complete_application_matrix_synthetic_ea_dataset.xlsx': 500 applications, 7000 allocations
+2026-09-10T21:12:31.019+05:30  INFO 35480 --- [context-cartography] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-10T21:12:31.020+05:30  INFO 35480 --- [context-cartography] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-10T21:12:31.021+05:30  INFO 35480 --- [context-cartography] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-09-10T21:12:31.160+05:30  INFO 35480 --- [context-cartography] [nio-8080-exec-1] c.v.eacontext.graph.GraphBuilderService  : Built context graph: 2142 vertex/vertices, 15916 edge(s), 7000 allocation(s)
+2026-09-10T21:13:19.699+05:30  INFO 35480 --- [context-cartography] [nio-8080-exec-5] c.v.eacontext.graph.GraphBuilderService  : Built context graph: 2142 vertex/vertices, 15916 edge(s), 7000 allocation(s)
+2026-09-10T21:13:20.034+05:30  INFO 35480 --- [context-cartography] [nio-8080-exec-4] c.v.eacontext.graph.GraphBuilderService  : Built context graph: 2142 vertex/vertices, 15916 edge(s), 7000 allocation(s)
+2026-09-10T21:13:20.817+05:30  INFO 35480 --- [context-cartography] [nio-8080-exec-7] c.v.eacontext.graph.GraphBuilderService  : Built context graph: 2142 vertex/vertices, 15916 edge(s), 7000 allocation(s)

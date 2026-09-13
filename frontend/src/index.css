@@ -1,0 +1,79 @@
+:root {
+  --text: #53616a;
+  --text-h: #17252b;
+  --bg: #f4f7f6;
+  --border: #dce5e2;
+  --code-bg: #edf3f1;
+  --accent: #087f78;
+  --accent-bg: #e4f4f1;
+  --accent-border: #a9d9d2;
+  --social-bg: #f7faf9;
+  --shadow:
+    rgba(26, 51, 48, 0.08) 0 12px 32px, rgba(26, 51, 48, 0.05) 0 2px 8px;
+
+  --sans: 'Aptos', 'Segoe UI', sans-serif;
+  --heading: 'Aptos Display', 'Segoe UI', sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 16px/145% var(--sans);
+  letter-spacing: 0;
+  color-scheme: light;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--bg);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 650;
+  color: var(--text-h);
+}
+
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}

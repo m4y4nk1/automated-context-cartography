@@ -1,0 +1,173 @@
+.issue-navigator {
+  margin-bottom: 7px;
+}
+
+.issue-severity-group + .issue-severity-group {
+  margin-top: 6px;
+}
+
+.issue-severity-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.issue-severity-label {
+  font-size: 11px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #5f7075;
+}
+
+.issue-severity-chevron {
+  color: var(--muted-text, #5f7075);
+  transition: transform 160ms ease;
+}
+
+.issue-severity-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .issue-severity-chevron {
+    transition: none;
+  }
+}
+
+.issue-navigator-list {
+  gap: 5px;
+}
+
+.issue-item {
+  --issue-color: var(--accent-lime);
+  position: relative;
+  display: grid;
+  grid-template-columns: 26px max-content auto;
+  align-items: center;
+  gap: 7px;
+  /* Size to fit the full label, never shrink it — a row with more cards than
+     fit just overflows and the scroll arrows (HorizontalScroller) reveal the
+     rest. No stretch either, so a lone card (e.g. Low severity) sits at its
+     own natural width instead of filling the row. */
+  flex: 0 0 auto;
+  min-width: 150px;
+  height: 38px;
+  padding: 5px 10px 6px;
+  overflow: hidden;
+  color: var(--panel-text);
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.issue-item:hover {
+  background: color-mix(in srgb, var(--issue-color) 7%, white);
+  border-color: color-mix(in srgb, var(--issue-color) 28%, white);
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--issue-color) 13%, transparent);
+  transform: translateY(-2px);
+}
+
+.issue-item:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--issue-color) 24%, transparent);
+  outline-offset: 2px;
+}
+
+.issue-item.is-active {
+  color: #ffffff;
+  background: var(--issue-color);
+  border-color: color-mix(in srgb, var(--issue-color) 55%, white);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--issue-color) 14%, transparent);
+}
+
+.issue-item--coral {
+  --issue-color: #df6249;
+}
+
+.issue-item--amber {
+  --issue-color: #c2415d;
+}
+
+.issue-item--gold {
+  --issue-color: #2563a6;
+}
+
+.issue-item--slate {
+  --issue-color: #68767e;
+}
+
+.issue-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  color: var(--issue-color);
+  background: color-mix(in srgb, var(--issue-color) 11%, white);
+  border-radius: 4px;
+}
+
+.issue-item-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issue-item-label {
+  color: inherit;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 750;
+}
+
+.issue-item-count {
+  min-width: 22px;
+  padding: 3px 5px;
+  color: var(--issue-color);
+  font-size: 12px;
+  line-height: 1.1;
+  font-weight: 800;
+  text-align: center;
+  background: color-mix(in srgb, var(--issue-color) 10%, white);
+  border-radius: 10px;
+}
+
+.issue-item.is-active .issue-item-icon,
+.issue-item.is-active .issue-item-count {
+  color: var(--issue-color);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.issue-item-meter {
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  background: var(--issue-color);
+  opacity: 0.7;
+  transform: scaleX(0.18);
+  transform-origin: left;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.issue-item:hover .issue-item-meter,
+.issue-item.is-active .issue-item-meter {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+@media (max-width: 680px) {
+  .issue-item {
+    flex-basis: 145px;
+    min-width: 145px;
+  }
+}

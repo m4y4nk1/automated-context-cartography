@@ -1,0 +1,109 @@
+.graph-legend {
+  position: absolute;
+  /* Bottom-right, not bottom-left: the Controls drawer (.panel-drawer,
+     z-index 12) slides in from the left and overlays the canvas rather than
+     resizing it, so a left-anchored legend would sit underneath it. Sitting
+     at z-index 8 (below the drawer) is a belt-and-braces fallback in case
+     anything else from the left ever reaches this corner. */
+  right: 12px;
+  bottom: 12px;
+  z-index: 8;
+  max-width: min(280px, calc(100vw - 24px));
+}
+
+.graph-legend-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--panel-text);
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(26, 51, 48, 0.12);
+  cursor: pointer;
+}
+
+.graph-legend-toggle:hover {
+  border-color: var(--accent-lime);
+}
+
+.graph-legend-chevron {
+  transition: transform 150ms ease;
+}
+
+.graph-legend-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.graph-legend-body {
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(26, 51, 48, 0.14);
+  max-height: min(360px, calc(100vh - 160px));
+  overflow-y: auto;
+}
+
+.graph-legend-section + .graph-legend-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.graph-legend-heading {
+  font-size: 10px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #5f7075;
+  margin-bottom: 6px;
+}
+
+.graph-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--panel-text);
+  padding: 3px 0;
+}
+
+.graph-legend-row--note {
+  color: var(--muted-text, #5f7075);
+  font-style: italic;
+}
+
+.graph-legend-line {
+  flex: 0 0 22px;
+  height: 0;
+  border-top-width: 2px;
+  border-top-color: #9aa7a5;
+}
+
+.graph-legend-line--solid {
+  border-top-style: solid;
+}
+
+.graph-legend-line--dashed {
+  border-top-style: dashed;
+}
+
+.graph-legend-swatch {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #ffffff;
+  border-width: 3px;
+}
+
+.graph-legend-swatch--thick {
+  border-width: 5px;
+  border-color: #5f7075;
+  border-style: solid;
+}

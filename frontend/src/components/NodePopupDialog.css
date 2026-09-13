@@ -1,0 +1,212 @@
+.node-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 20, 19, 0.5);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: node-popup-fade 0.2s ease-out;
+}
+
+.node-popup-overlay.is-closing {
+  animation: node-popup-fade 0.15s ease-in reverse;
+}
+
+.node-popup-dialog {
+  --accent: #0e4a47;
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  max-height: min(82vh, 560px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow:
+    0 24px 60px rgba(15, 27, 25, 0.32),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+    0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  animation: node-popup-pop 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: box-shadow 0.2s ease;
+}
+
+.node-popup-dialog.is-closing {
+  animation: node-popup-pop 0.14s ease-in reverse;
+}
+
+.node-popup-dialog:hover {
+  box-shadow:
+    0 28px 68px rgba(15, 27, 25, 0.36),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+    0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Compact, interactive header */
+.node-popup-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 44px 10px 14px;
+  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 65%, #0b1413) 100%);
+  color: #fff;
+  overflow: hidden;
+  transition: padding 0.2s ease;
+}
+
+.node-popup-dialog:hover .node-popup-header {
+  padding: 12px 44px 12px 14px;
+}
+
+.node-popup-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120px 80px at 100% 0%, rgba(255, 255, 255, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.node-popup-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(2px);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.node-popup-dialog:hover .node-popup-icon {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.node-popup-heading {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.node-popup-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.node-popup-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  flex: 0 0 auto;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.node-popup-chip:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.node-popup-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.node-popup-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.node-popup-close:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+.node-popup-body {
+  padding: 16px 18px 20px;
+  overflow-y: auto;
+}
+
+.node-popup-dialog .node-detail {
+  border: none;
+  padding: 0;
+  background: transparent;
+  animation: node-popup-row-in 0.28s ease-out both;
+}
+
+.node-popup-dialog .node-detail:hover {
+  box-shadow: none;
+}
+
+.node-popup-dialog .detail-row {
+  border-bottom-color: #e7efec;
+  transition: background 0.15s;
+  border-radius: 6px;
+  padding-left: 6px;
+  padding-right: 6px;
+  margin: 0 -6px;
+}
+
+.node-popup-dialog .detail-row:hover {
+  background: #f2f7f5;
+}
+
+.node-popup-dialog .node-detail-badges {
+  animation: node-popup-row-in 0.32s 0.05s ease-out both;
+}
+
+.node-popup-dialog .badge {
+  transition: transform 0.15s;
+}
+
+.node-popup-dialog .badge:hover {
+  transform: translateY(-1px);
+}
+
+@keyframes node-popup-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes node-popup-pop {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes node-popup-row-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

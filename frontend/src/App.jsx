@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ListFilter, PanelRightOpen, X } from 'lucide-react'
+import AnchorPicker from './components/AnchorPicker'
 import DashboardCards from './components/DashboardCards'
 import FrameTabs from './components/FrameTabs'
-import FilterPanel, { EMPTY_FILTERS, toServerFilters } from './components/FilterPanel'
+import FilterPanel from './components/FilterPanel'
 import ExportButton from './components/ExportButton'
 import GraphCanvas from './components/GraphCanvas'
 import InsightsPanel from './components/InsightsPanel'
-import NodeDetail from './components/NodeDetail'
 import NodePopupDialog from './components/NodePopupDialog'
 import Toast from './components/Toast'
-import UploadButton from './components/UploadButton'
 import UploadPage from './components/UploadPage'
 import { useGraphData } from './hooks/useGraphData'
 import { useFilterOptions } from './hooks/useFilterOptions'
@@ -18,6 +17,7 @@ import { useInsights } from './hooks/useInsights'
 import { useSummary } from './hooks/useSummary'
 import { nodeClassesFromFindings } from './services/insightAdapter'
 import { fitReadable } from './services/graphViewport'
+import { EMPTY_FILTERS, toServerFilters } from './services/filterState'
 import './App.css'
 
 const FRAME_LABELS = {
@@ -26,24 +26,6 @@ const FRAME_LABELS = {
   process: 'Process',
   infoflow: 'Information Flow',
 }
-
-/**
- * Only these 2 finding types are, by definition, a reference to a record the
- * backend could never resolve anywhere (the whole point of the finding is
- * "this id points at something that doesn't exist"): BROKEN_INFORMATION_FLOW_REFERENCE's
- * only related id is the flow itself (no app id at all — see
- * BrokenInformationFlowReferenceDetector), and UNMAPPED_PROCESS_APPLICATION's
- * process mapping is dropped entirely by GraphProjectionService.businessProcessView
- * whenever its app is a ghost, so even the process itself never becomes a node.
- * Every other "ghost reference" type (broken relationships, dangling interface
- * consumers) also carries a second, real, always-resolvable application id
- * alongside its ghost one — those are handled by bestFrameSuggestion below,
- * not here.
- */
-const GHOST_REFERENCE_TYPES = new Set([
-  'BROKEN_INFORMATION_FLOW_REFERENCE',
-  'UNMAPPED_PROCESS_APPLICATION',
-])
 
 /**
  * Which frame(s) a given entity id could plausibly appear in, by its stable
@@ -99,14 +81,65 @@ function uploadToast(report) {
 
 function Workspace({ initialReport }) {
   const [frame, setFrame] = useState('application')
-  const [refreshKey, setRefreshKey] = useState(0)
+  // No UI path re-sets this today (there's no re-upload affordance once
+  // Workspace is mounted — see App()'s single initialReport gate below), so
+  // it's a stable 0 for the lifetime of a session; kept as the refetch key
+  // every data-fetching hook below expects rather than removing it outright.
+  const [refreshKey] = useState(0)
   const [controlsOpen, setControlsOpen] = useState(false)
   const [insightsOpen, setInsightsOpen] = useState(true)
   const [activeIssueType, setActiveIssueType] = useState(null)
   const [filters, setFilters] = useState(EMPTY_FILTERS)
   // Matrix dimensions are resolved server-side; the rest stay client-side.
   const serverFilters = useMemo(() => toServerFilters(filters, frame), [filters, frame])
-  const { elements, loading, error: graphError } = useGraphData(frame, refreshKey, serverFilters)
+
+  // The anchor a user has picked to focus the diagram on (F2/F3: a genuinely
+  // scoped context diagram, not the whole frame with elements dimmed) — see
+  // AnchorPicker. Frame-specific, so it resets whenever the frame changes.
+  const [anchorId, setAnchorId] = useState(null)
+  const [anchorDepth, setAnchorDepth] = useState(1)
+
+  // Always fetch the unscoped frame — it drives both the anchor picker's
+  // option list (which must show every possible starting point, not just
+  // whatever a current focus already narrowed things down to) and the
+  // existing domain-filter dropdown below. When no anchor is picked this is
+  // also what's rendered, so focusing/clearing costs at most one extra fetch,
+  // not two on the common unfocused path.
+  const { elements: fullElements, loading: fullLoading, error: fullGraphError } =
+    useGraphData(frame, refreshKey, serverFilters)
+
+  const anchorParams = useMemo(
+    () => (anchorId ? { ...serverFilters, anchor: anchorId, depth: anchorDepth } : null),
+    [serverFilters, anchorId, anchorDepth],
+  )
+  const { elements: scopedElements, loading: scopedLoading, error: scopedGraphError } =
+    useGraphData(anchorParams ? frame : null, refreshKey, anchorParams ?? {})
+
+  const elements = anchorId ? scopedElements : fullElements
+  const loading = anchorId ? scopedLoading : fullLoading
+  const graphError = anchorId ? scopedGraphError : fullGraphError
+
+  // Every node in the full (unscoped) frame is a valid anchor — id doubles as
+  // the value the backend expects (an application/process/info-object id, or,
+  // for the domain frame, the domain node's own id, which IS the raw domain
+  // value GraphScopeService.scopeByAttribute matches against).
+  //
+  // Interfaces are the one anchor type with no node of their own — in the
+  // application frame each is its own edge (id = the interface's own id), not
+  // a node. Offered here too, application frame only, so "identify consumers
+  // of a given interface" has something to pick: GraphScopeService.scope()
+  // falls back to matching an edge id and seeds the diagram from both ends.
+  const anchorOptions = useMemo(() => {
+    const nodeOptions = fullElements
+      .filter((el) => !(el.data.source && el.data.target)) // nodes only, no edges
+      .map((el) => ({ value: el.data.id, label: el.data.label ?? el.data.id }))
+    const interfaceOptions = frame === 'application'
+      ? fullElements
+          .filter((el) => el.data.source && el.data.target && el.data.type === 'INTERFACE')
+          .map((el) => ({ value: el.data.id, label: `${el.data.label ?? el.data.id} (interface)` }))
+      : []
+    return [...nodeOptions, ...interfaceOptions].sort((a, b) => a.label.localeCompare(b.label))
+  }, [fullElements, frame])
   const { findings, loading: findingsLoading, error: findingsError } = useInsights(refreshKey)
   const { summary, loading: summaryLoading, error: summaryError } = useSummary(refreshKey)
   const { comparison: gapComparison, loading: gapComparisonLoading } = useGapComparison(refreshKey)
@@ -166,20 +199,10 @@ function Workspace({ initialReport }) {
   const handleFrameChange = (nextFrame) => {
     setFilters(EMPTY_FILTERS)
     setFrame(nextFrame)
-  }
-
-  // After a successful upload, refresh all data and toast the validation result.
-  const handleUploaded = (report) => {
-    setSelectedNode(null)
-    setNodePopupOpen(false)
-    setActiveIssueType(null)
-    setFilters(EMPTY_FILTERS)
-    setRefreshKey((k) => k + 1)
-    setToast(uploadToast(report))
-  }
-
-  const handleUploadError = () => {
-    setToast({ variant: 'error', message: 'Upload failed. Please check the file and try again.' })
+    // Anchor ids are frame-specific (a process id has no meaning in the
+    // application frame), so a frame switch always drops back to the full
+    // landscape rather than carrying over a now-meaningless anchor.
+    setAnchorId(null)
   }
 
   const handleExportError = () => {
@@ -221,7 +244,7 @@ function Workspace({ initialReport }) {
         <h1 className="app-title">
           AI-Powered Enterprise Context Diagram Generator & Insight Engine
         </h1>
-        <ExportButton getCy={() => cyRef.current} onError={handleExportError} />
+        <ExportButton getCy={() => cyRef.current} frame={frame} onError={handleExportError} />
       </header>
 
       <div className="app-body">
@@ -266,6 +289,13 @@ function Workspace({ initialReport }) {
               activeFrame={frame}
               onFrameChange={handleFrameChange}
             />
+            <AnchorPicker
+              options={anchorOptions}
+              anchorId={anchorId}
+              depth={anchorDepth}
+              onAnchorChange={setAnchorId}
+              onDepthChange={setAnchorDepth}
+            />
           </div>
           <DashboardCards
             findings={findings}
@@ -285,16 +315,16 @@ function Workspace({ initialReport }) {
               filters={filters}
               onNodeSelect={handleNodeSelect}
               onFocusMiss={() => {
-                const doesNotExistMessage =
-                  "This finding's record couldn't be shown on the graph — it references an entity that doesn't exist in the dataset."
-                let message = doesNotExistMessage
-                if (!GHOST_REFERENCE_TYPES.has(activeIssueType)) {
-                  const suggestion = bestFrameSuggestion(activeIssueType, findings, frame)
-                  if (suggestion) {
-                    message = `This finding isn't part of the ${FRAME_LABELS[frame] ?? frame} view — switch to ${FRAME_LABELS[suggestion] ?? suggestion} to see it highlighted.`
-                  }
-                }
-                setToast({ variant: 'warning', message })
+                // Unresolvable references now render as placeholder nodes in
+                // whichever frame declares them, so a miss is almost always a
+                // wrong-frame miss rather than a genuinely unshowable record.
+                const suggestion = bestFrameSuggestion(activeIssueType, findings, frame)
+                setToast({
+                  variant: 'warning',
+                  message: suggestion
+                    ? `This finding isn't part of the ${FRAME_LABELS[frame] ?? frame} view — switch to ${FRAME_LABELS[suggestion] ?? suggestion} to see it highlighted.`
+                    : "This finding's record couldn't be shown on the graph — it references an entity that doesn't exist in the dataset.",
+                })
               }}
               onReady={(cy) => {
                 cyRef.current = cy
@@ -335,11 +365,6 @@ function Workspace({ initialReport }) {
               activeType={activeIssueType}
               onIssueSelect={setActiveIssueType}
             />
-            {/* <h3 className="insights-label">Selection</h3>
-            <NodeDetail
-              node={selectedNode}
-              issueClasses={selectedNode ? nodeClasses[selectedNode.id] ?? '' : ''}
-            /> */}
           </aside>
         ) : (
           <button

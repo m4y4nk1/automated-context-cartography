@@ -29,6 +29,7 @@ import com.vw.eacontext.model.Interface;
 import com.vw.eacontext.model.InterfaceStatus;
 import com.vw.eacontext.model.LifecycleStatus;
 import com.vw.eacontext.model.Operation;
+import com.vw.eacontext.model.ProcessCriticality;
 import com.vw.eacontext.model.ProcessMapping;
 import com.vw.eacontext.model.Protocol;
 import com.vw.eacontext.model.Relationship;
@@ -524,7 +525,7 @@ public final class IngestionSupport {
                 .businessProcessId(read.value("businessProcessId"))
                 .supportingApplicationId(read.value("supportingApplicationId"))
                 .roleOfApplication(enumFromLabel(RoleOfApplication.class, read.value("roleOfApplication")))
-                .processCriticality(enumFromLabel(BusinessCriticality.class, read.value("processCriticality")))
+                .processCriticality(enumFromLabel(ProcessCriticality.class, read.value("processCriticality")))
                 .attributes(read.extras())
                 .build();
     }

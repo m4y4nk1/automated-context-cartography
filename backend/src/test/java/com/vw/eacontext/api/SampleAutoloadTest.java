@@ -26,8 +26,8 @@ class SampleAutoloadTest {
     void bundledSampleIsAvailableWithoutUpload() throws Exception {
         mockMvc.perform(get("/api/graph/application"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nodes.length()").value(12))
-                .andExpect(jsonPath("$.edges.length()").value(12));
+                .andExpect(jsonPath("$.nodes.length()").value(13))
+                .andExpect(jsonPath("$.edges.length()").value(24));
 
         mockMvc.perform(get("/api/insights"))
                 .andExpect(status().isOk())

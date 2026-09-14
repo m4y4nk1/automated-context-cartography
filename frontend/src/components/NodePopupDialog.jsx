@@ -91,7 +91,9 @@ function NodePopupDialog({ open, node, issueClasses = '', findings = [], onClose
         </div>
 
         <div className="node-popup-body">
-          <NodeDetail node={node} issueClasses={issueClasses} findings={findings} hideTitle />
+          {/* Keyed on the node id so NodeDetail remounts (and its local "simulate
+              retiring this app" state resets) whenever a different node is selected. */}
+          <NodeDetail key={node.id} node={node} issueClasses={issueClasses} findings={findings} hideTitle />
         </div>
       </div>
     </div>

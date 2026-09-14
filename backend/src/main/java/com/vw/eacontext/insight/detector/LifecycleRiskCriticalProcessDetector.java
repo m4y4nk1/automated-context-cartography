@@ -12,8 +12,8 @@ import com.vw.eacontext.insight.Detector;
 import com.vw.eacontext.insight.Finding;
 import com.vw.eacontext.insight.FindingType;
 import com.vw.eacontext.model.Application;
-import com.vw.eacontext.model.BusinessCriticality;
 import com.vw.eacontext.model.CanonicalModel;
+import com.vw.eacontext.model.ProcessCriticality;
 import com.vw.eacontext.model.ProcessMapping;
 import com.vw.eacontext.validation.Severity;
 
@@ -30,7 +30,7 @@ public class LifecycleRiskCriticalProcessDetector implements Detector {
             if (app == null || app.lifecycleStatus() == null || !app.lifecycleStatus().isEndOfLife()) {
                 continue;
             }
-            if (mapping.processCriticality() == BusinessCriticality.MISSION_CRITICAL) {
+            if (mapping.processCriticality() == ProcessCriticality.MISSION_CRITICAL) {
                 findings.add(new Finding(FindingType.LIFECYCLE_RISK_CRITICAL_PROCESS, Severity.ERROR,
                         DetectorSupport.ids(app.id(), mapping.businessProcessId()),
                         "End-of-life application '" + app.id() + "' (" + app.name()

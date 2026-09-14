@@ -18,6 +18,7 @@ import lombok.Builder;
  * @param supportingApplicationId  id of the supporting application (may be a ghost reference)
  * @param roleOfApplication        whether the application is the primary or a supporting system
  * @param processCriticality       criticality of the process from this mapping's perspective
+ *                                 (a 3-value scale — see {@link ProcessCriticality})
  * @param attributes               unrecognized source columns, retained verbatim
  */
 @Builder
@@ -26,7 +27,7 @@ public record ProcessMapping(
         String businessProcessId,
         String supportingApplicationId,
         RoleOfApplication roleOfApplication,
-        BusinessCriticality processCriticality,
+        ProcessCriticality processCriticality,
         Map<String, String> attributes
 ) {
     public ProcessMapping {

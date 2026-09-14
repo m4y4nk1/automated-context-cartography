@@ -40,6 +40,21 @@ function baseStyle() {
       },
     },
     { selector: 'node[sub]', style: { 'font-size': '11px' } },
+    // Placeholder for an id that records point at but which has no row of its
+    // own — an application or a business process. Declared BEFORE the
+    // issue-ring classes so that a node also carrying a broken-reference
+    // finding still gets its red ring.
+    {
+      selector: 'node[type="applicationGhost"], node[type="processGhost"]',
+      style: {
+        shape: 'round-rectangle',
+        'border-width': 3,
+        'border-color': '#68767e',
+        'border-style': 'dashed',
+        'font-size': '12px',
+        'font-style': 'italic',
+      },
+    },
     { selector: '.dim', style: { opacity: 0.15 } },
     { selector: '.issue-focus-dim', style: { opacity: 0.1 } },
     { selector: '.filter-search-dim', style: { opacity: 0.08 } },
@@ -114,14 +129,10 @@ function baseStyle() {
     // shows (see the ordering comment above) — the full list is always
     // available in NodeDetail. Declared last so it always wins the width.
     { selector: 'node.multi-issue', style: { 'border-width': 7 } },
-    {
-      selector: 'edge[type = "DEPENDS_ON"]',
-      style: { 'line-style': 'solid' },
-    },
-    {
-      selector: 'edge[type = "USES"]',
-      style: { 'line-style': 'dashed' },
-    },
+    // Base edge FIRST, then the type-specific overrides. Cytoscape resolves
+    // equal specificity by last-matching-rule-wins, so a bare `edge` rule
+    // declared after these would silently swallow any property it shares with
+    // them — the same hazard documented for the issue rings above.
     {
       selector: 'edge',
       style: {
@@ -132,6 +143,25 @@ function baseStyle() {
         'curve-style': 'bezier',
         'arrow-scale': 1,
       },
+    },
+    {
+      selector: 'edge[type = "DEPENDS_ON"]',
+      style: { 'line-style': 'solid' },
+    },
+    {
+      selector: 'edge[type = "USES"]',
+      style: { 'line-style': 'dashed' },
+    },
+    // Interface and information-flow edges — separate lines from any
+    // dependency edge between the same two applications, not merged into it.
+    // Coloured rather than grey so they stand out from a plain dependency.
+    {
+      selector: 'edge[kind = "interface"]',
+      style: { 'line-style': 'solid', 'line-color': '#3f8fa8', 'target-arrow-color': '#3f8fa8' },
+    },
+    {
+      selector: 'edge[kind = "flow"]',
+      style: { 'line-style': 'dashed', 'line-color': '#8a63c7', 'target-arrow-color': '#8a63c7' },
     },
     {
       selector: 'edge[label]',
@@ -213,9 +243,16 @@ function baseStyle() {
 /**
  * Layout configuration per frame, ported from the prototype (layoutFor()).
  * @param {string} frame - The active observation frame.
+ * @param {Array<object>} [elements] - The elements about to be laid out. Only
+ *   consulted for the domain frame: a domain ANCHOR (see AnchorPicker) scopes
+ *   to that domain's individual applications rather than domain-to-domain
+ *   bubbles, and the circle layout below is tuned for a dozen large bubbles,
+ *   not a few dozen application nodes — using it there was spreading nodes to
+ *   the far corners of the canvas. Detect which shape is actually present
+ *   rather than trusting the frame name alone.
  */
-function layoutFor(frame) {
-  if (frame === 'domain') {
+function layoutFor(frame, elements = []) {
+  if (frame === 'domain' && elements.some((el) => el.data?.type === 'domain')) {
     return {
       name: 'circle',
       padding: 80,
@@ -432,7 +469,6 @@ function GraphCanvas({
   focusedNodeIds = null,
   filters,
   onNodeSelect,
-  onSearchSelect,
   onReady,
   onFocusMiss,
 }) {
@@ -441,11 +477,8 @@ function GraphCanvas({
   // Guards against stale async getNodeImpact() responses.
   const impactTokenRef = useRef(0)
   // Keep the latest callbacks/frame without forcing the graph to re-init.
-  // onNodeSelect drives tap-triggered UI (e.g. the node details popup);
-  // onSearchSelect only drives search-result highlighting and must never
-  // open/close that popup.
-  const handlersRef = useRef({ onNodeSelect, onSearchSelect, frame, onReady, onFocusMiss })
-  handlersRef.current = { onNodeSelect, onSearchSelect, frame, onReady, onFocusMiss }
+  const handlersRef = useRef({ onNodeSelect, frame, onReady, onFocusMiss })
+  handlersRef.current = { onNodeSelect, frame, onReady, onFocusMiss }
 
   // Initialize Cytoscape once, tear it down on unmount.
   useEffect(() => {
@@ -515,7 +548,7 @@ function GraphCanvas({
       cy.elements().remove()
       cy.add(elements)
     })
-    const layout = cy.layout(layoutFor(frame))
+    const layout = cy.layout(layoutFor(frame, elements))
     layout.one('layoutstop', () => fitReadable(cy))
     layout.run()
   }, [elements, frame])
@@ -573,11 +606,15 @@ function GraphCanvas({
 
     // A finding's relatedEntityIds are raw domain-model ids (e.g. an
     // information-flow id like "FLOW-0020" or an interface id like
-    // "IF-0020"). Those aren't always literal element ids: the info-flow
-    // view stores them as "<flowId>:produces" / "<flowId>:consumes" edge ids
-    // (with the flow/interface id only inside edge data), so fall back to
-    // matching by id-prefix and by the flowId/interfaceId data fields before
-    // giving up on an id.
+    // "IF-0020"). In the application frame those ARE the element ids (each
+    // relationship/interface/flow record is its own edge), so the direct
+    // lookup below usually resolves immediately. It isn't always a literal
+    // element id though: the info-flow view stores its edges as
+    // "<flowId>:produces" / "<flowId>:consumes" (with the flow/interface id
+    // only inside edge data). So fall back to matching by id-prefix, by the
+    // flowId/interfaceId data fields, and by `memberIds` (still present on
+    // every application-frame edge, just single-membered now) before giving
+    // up on an id.
     const seen = new Set()
     const focusedElements = []
     for (const id of focusedNodeIds) {
@@ -585,7 +622,10 @@ function GraphCanvas({
       if (matches.empty()) {
         matches = cy.filter((element) => {
           const data = element.data()
-          return element.id().startsWith(`${id}:`) || data.flowId === id || data.interfaceId === id
+          return element.id().startsWith(`${id}:`)
+            || data.flowId === id
+            || data.interfaceId === id
+            || (Array.isArray(data.memberIds) && data.memberIds.includes(id))
         })
       }
       matches.forEach((element) => {
@@ -635,7 +675,6 @@ function GraphCanvas({
     const query = (filters?.search ?? '').trim().toLowerCase()
     impactTokenRef.current += 1
     clearHighlight(cy)
-    handlersRef.current.onSearchSelect?.(null)
     if (!query) return undefined
 
     const timeout = window.setTimeout(() => {
@@ -650,7 +689,6 @@ function GraphCanvas({
       const node = exactMatch.length > 0 ? exactMatch.first() : matches.first()
       const id = node.id()
 
-      handlersRef.current.onSearchSelect?.({ ...node.data(), connections: node.degree(false) })
       if (frame !== 'application') {
         applyNeighborhoodHighlight(cy, node)
         return

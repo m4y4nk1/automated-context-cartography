@@ -127,8 +127,10 @@
 
 .frame-tabs-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   min-height: 44px;
   padding-inline: 44px;
   margin-bottom: 9px;

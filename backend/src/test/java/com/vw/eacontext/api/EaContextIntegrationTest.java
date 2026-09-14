@@ -35,8 +35,10 @@ class EaContextIntegrationTest {
         GraphDto graph = response.getBody();
         assertThat(graph).isNotNull();
         assertThat(graph.frame()).isEqualTo("application");
-        assertThat(graph.nodes()).hasSize(12);
-        assertThat(graph.edges()).hasSize(12);
+        // 12 applications + the APP-9001 placeholder; 24 relationship/interface/
+        // flow records, each its own edge.
+        assertThat(graph.nodes()).hasSize(13);
+        assertThat(graph.edges()).hasSize(24);
     }
 
     @Test

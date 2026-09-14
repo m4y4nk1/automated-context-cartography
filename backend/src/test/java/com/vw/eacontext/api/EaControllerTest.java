@@ -71,8 +71,8 @@ class EaControllerTest {
         mockMvc.perform(get("/api/graph/application"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.frame").value("application"))
-                .andExpect(jsonPath("$.nodes.length()").value(12))
-                .andExpect(jsonPath("$.edges.length()").value(12));
+                .andExpect(jsonPath("$.nodes.length()").value(13))
+                .andExpect(jsonPath("$.edges.length()").value(24));
 
         mockMvc.perform(get("/api/graph/infoflow"))
                 .andExpect(status().isOk())

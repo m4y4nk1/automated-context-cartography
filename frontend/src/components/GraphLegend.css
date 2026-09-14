@@ -93,6 +93,12 @@
   border-top-style: dashed;
 }
 
+/* Sample of the heaviest bundled edge (several records describing one pair). */
+.graph-legend-line--thick {
+  border-top-style: solid;
+  border-top-width: 4px;
+}
+
 .graph-legend-swatch {
   flex: 0 0 16px;
   width: 16px;
@@ -106,4 +112,11 @@
   border-width: 5px;
   border-color: #5f7075;
   border-style: solid;
+}
+
+/* Matches the placeholder node style in GraphCanvas: muted fill, dashed edge. */
+.graph-legend-swatch--ghost {
+  background: #a3adab;
+  border-color: #68767e;
+  border-style: dashed;
 }

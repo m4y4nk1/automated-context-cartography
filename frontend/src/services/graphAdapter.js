@@ -25,6 +25,14 @@ const FALLBACK_PALETTE = [
 const PROCESS_COLOR = '#0E4A47'
 const INFO_OBJECT_COLOR = '#5b6472'
 
+/**
+ * Placeholder nodes standing in for an id that records reference but that has
+ * no row of its own — an application (`applicationGhost`) or a business
+ * process (`processGhost`). Deliberately washed-out so they read as "not a
+ * real entity" next to the saturated domain/process colors.
+ */
+const GHOST_COLOR = '#a3adab'
+
 /** Colors for the application-matrix node types. */
 const LANDSCAPE_COLOR = '#1f5f8b'
 const SITE_COLOR = '#2a7f8f'
@@ -56,6 +64,9 @@ function colorForDomain(domain) {
 function colorForNode(node) {
   const data = node.data ?? {}
   switch (node.type) {
+    case 'applicationGhost':
+    case 'processGhost':
+      return GHOST_COLOR
     case 'process':
       return PROCESS_COLOR
     case 'informationObject':
@@ -128,10 +139,12 @@ export function toCytoscapeElements(graph) {
  */
 function edgeKind(type) {
   if (type === 'DEPENDS_ON' || type === 'USES') return 'relationship'
+  // Application-frame edges for pairs connected only by an interface or only by
+  // an information flow, with no relationship row to name the dependency.
+  if (type === 'INTERFACE') return 'interface'
+  if (type === 'FLOW') return 'flow'
   if (type === 'processMapping') return 'processMapping'
   if (type === 'produces' || type === 'consumes') return 'informationFlow'
   if (type === 'domainFlow') return 'domainFlow'
   return 'other'
 }
-
-export { DOMAIN_COLORS }

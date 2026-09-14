@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { getSimulatedRemoval } from '../services/api'
 import { findingsForEntity } from '../services/insightAdapter'
 import './NodeDetail.css'
 
@@ -70,6 +72,14 @@ function DetailRow({ label, value, fallback }) {
  *   an outer container (e.g. NodePopupDialog) already renders the node name.
  */
 function NodeDetail({ node, issueClasses = '', findings = [], hideTitle = false }) {
+  // Hooks must run unconditionally (before the `!node` early return below).
+  // Callers key this component on `node.id` (see NodePopupDialog.jsx) so this
+  // local state naturally resets via remount when a different node is picked
+  // — no effect needed to clear it by hand.
+  const [simulation, setSimulation] = useState(null)
+  const [simulationLoading, setSimulationLoading] = useState(false)
+  const [simulationError, setSimulationError] = useState(null)
+
   if (!node) {
     return (
       <div className="node-detail node-detail--empty">
@@ -82,6 +92,18 @@ function NodeDetail({ node, issueClasses = '', findings = [], hideTitle = false 
     .split(' ')
     .filter((cls) => BADGES[cls])
   const nodeFindings = findingsForEntity(findings, node.id)
+
+  const runSimulation = async () => {
+    setSimulationLoading(true)
+    setSimulationError(null)
+    try {
+      setSimulation(await getSimulatedRemoval(node.id))
+    } catch {
+      setSimulationError("Couldn't run the simulation. Please try again.")
+    } finally {
+      setSimulationLoading(false)
+    }
+  }
 
   return (
     <div className="node-detail">
@@ -146,6 +168,69 @@ function NodeDetail({ node, issueClasses = '', findings = [], hideTitle = false 
               {finding.message}
             </p>
           ))}
+        </div>
+      )}
+
+      {node.type === 'application' && (
+        <div className="node-detail-section">
+          <div className="node-detail-subtitle">What if this app were retired?</div>
+
+          {!simulation && (
+            <button
+              type="button"
+              className="node-detail-simulate-btn"
+              onClick={runSimulation}
+              disabled={simulationLoading}
+            >
+              {simulationLoading ? 'Simulating…' : 'Simulate retiring this application'}
+            </button>
+          )}
+
+          {simulationError && <div className="node-detail-empty-note">{simulationError}</div>}
+
+          {simulation && (
+            <>
+              <p className="node-detail-trace">
+                Would directly affect {simulation.upstream.length} upstream and{' '}
+                {simulation.downstream.length} downstream application(s).
+              </p>
+
+              {simulation.newFindings.length > 0 && (
+                <>
+                  <div className="node-detail-simulate-label node-detail-simulate-label--new">
+                    New problems this would create ({simulation.newFindings.length})
+                  </div>
+                  {simulation.newFindings.map((finding, index) => (
+                    <p key={`new-${index}`} className="node-detail-trace">{finding.message}</p>
+                  ))}
+                </>
+              )}
+
+              {simulation.resolvedFindings.length > 0 && (
+                <>
+                  <div className="node-detail-simulate-label node-detail-simulate-label--resolved">
+                    Problems this would resolve ({simulation.resolvedFindings.length})
+                  </div>
+                  {simulation.resolvedFindings.map((finding, index) => (
+                    <p key={`resolved-${index}`} className="node-detail-trace">{finding.message}</p>
+                  ))}
+                </>
+              )}
+
+              {simulation.newFindings.length === 0 && simulation.resolvedFindings.length === 0 && (
+                <div className="node-detail-empty-note">No architectural findings would change.</div>
+              )}
+
+              <button
+                type="button"
+                className="node-detail-simulate-btn node-detail-simulate-btn--secondary"
+                onClick={runSimulation}
+                disabled={simulationLoading}
+              >
+                {simulationLoading ? 'Simulating…' : 'Re-run simulation'}
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>

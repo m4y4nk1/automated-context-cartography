@@ -22,7 +22,7 @@ import lombok.Builder;
  * @param dataQualityGaps       pre-declared, partial known data-quality gaps
  * @param ingestionNotes        notes about ingestion issues
  */
-@Builder
+@Builder(toBuilder = true)
 public record CanonicalModel(
         List<Application> applications,
         List<Relationship> relationships,

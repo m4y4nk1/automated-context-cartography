@@ -31,8 +31,8 @@ const RING_ITEMS = [
  *
  * @param {object} props
  * @param {string} props.frame - The active frame; the edge-type key only
- *   applies where DEPENDS_ON/USES relationship edges are actually rendered
- *   (the application frame).
+ *   applies where these edges are actually rendered (the application frame).
+ *   The node and issue-ring keys apply everywhere.
  */
 function GraphLegend({ frame }) {
   const [open, setOpen] = useState(false)
@@ -64,8 +64,46 @@ function GraphLegend({ frame }) {
                 <span className="graph-legend-line graph-legend-line--dashed" aria-hidden="true" />
                 <span>Uses (soft dependency)</span>
               </div>
+              <div className="graph-legend-row">
+                <span
+                  className="graph-legend-line graph-legend-line--solid"
+                  style={{ borderTopColor: '#3f8fa8' }}
+                  aria-hidden="true"
+                />
+                <span>Interface — a named integration between two applications</span>
+              </div>
+              <div className="graph-legend-row">
+                <span
+                  className="graph-legend-line graph-legend-line--dashed"
+                  style={{ borderTopColor: '#8a63c7' }}
+                  aria-hidden="true"
+                />
+                <span>Information flow — a named data object moving between two applications</span>
+              </div>
+              <div className="graph-legend-row graph-legend-row--note">
+                <span className="graph-legend-line graph-legend-line--solid" aria-hidden="true" />
+                <span>
+                  One line per record — two applications connected by a dependency, an
+                  interface and a flow show as three separate lines.
+                </span>
+              </div>
+              <div className="graph-legend-row graph-legend-row--note">
+                <span className="graph-legend-line graph-legend-line--solid" aria-hidden="true" />
+                <span>
+                  The arrowhead always points at the dependent/consuming application, the same
+                  way for every line style above.
+                </span>
+              </div>
             </div>
           )}
+
+          <div className="graph-legend-section">
+            <div className="graph-legend-heading">Nodes</div>
+            <div className="graph-legend-row">
+              <span className="graph-legend-swatch graph-legend-swatch--ghost" aria-hidden="true" />
+              <span>Unresolved reference — referenced by a record, but missing from the dataset</span>
+            </div>
+          </div>
 
           <div className="graph-legend-section">
             <div className="graph-legend-heading">Issue rings</div>

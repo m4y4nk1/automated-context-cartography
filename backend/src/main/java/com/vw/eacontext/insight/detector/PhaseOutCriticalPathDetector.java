@@ -12,9 +12,9 @@ import com.vw.eacontext.insight.Detector;
 import com.vw.eacontext.insight.Finding;
 import com.vw.eacontext.insight.FindingType;
 import com.vw.eacontext.model.Application;
-import com.vw.eacontext.model.BusinessCriticality;
 import com.vw.eacontext.model.CanonicalModel;
 import com.vw.eacontext.model.LifecycleStatus;
+import com.vw.eacontext.model.ProcessCriticality;
 import com.vw.eacontext.model.ProcessMapping;
 import com.vw.eacontext.validation.Severity;
 
@@ -31,7 +31,7 @@ public class PhaseOutCriticalPathDetector implements Detector {
             if (app == null || app.lifecycleStatus() != LifecycleStatus.PHASE_OUT) {
                 continue;
             }
-            if (mapping.processCriticality() == BusinessCriticality.MISSION_CRITICAL) {
+            if (mapping.processCriticality() == ProcessCriticality.MISSION_CRITICAL) {
                 findings.add(new Finding(FindingType.PHASE_OUT_CRITICAL_PATH, Severity.WARNING,
                         DetectorSupport.ids(app.id(), mapping.businessProcessId()),
                         "Phase-out application '" + app.id() + "' (" + app.name()

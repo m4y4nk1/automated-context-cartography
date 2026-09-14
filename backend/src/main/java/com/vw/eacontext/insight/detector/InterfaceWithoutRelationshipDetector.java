@@ -8,6 +8,7 @@ import java.util.Set;
 import org.jgrapht.Graph;
 import org.springframework.stereotype.Component;
 
+import com.vw.eacontext.graph.ApplicationPairKey;
 import com.vw.eacontext.graph.RelationshipEdge;
 import com.vw.eacontext.insight.Detector;
 import com.vw.eacontext.insight.Finding;
@@ -28,7 +29,8 @@ public class InterfaceWithoutRelationshipDetector implements Detector {
         for (Relationship relationship : model.relationships()) {
             if (!DetectorSupport.isBlank(relationship.sourceApplicationId())
                     && !DetectorSupport.isBlank(relationship.targetApplicationId())) {
-                relationshipPairs.add(unorderedPair(relationship.sourceApplicationId(), relationship.targetApplicationId()));
+                relationshipPairs.add(ApplicationPairKey.of(
+                        relationship.sourceApplicationId(), relationship.targetApplicationId()));
             }
         }
 
@@ -42,7 +44,7 @@ public class InterfaceWithoutRelationshipDetector implements Detector {
             // applications still counts as "declared" — Relationships and
             // Interfaces are captured independently in the source data and
             // aren't guaranteed to agree on which side is the dependent one.
-            String pair = unorderedPair(iface.providerApplicationId(), iface.consumerApplicationId());
+            String pair = ApplicationPairKey.of(iface.providerApplicationId(), iface.consumerApplicationId());
             if (!relationshipPairs.contains(pair)) {
                 findings.add(new Finding(FindingType.INTERFACE_WITHOUT_RELATIONSHIP, Severity.WARNING,
                         DetectorSupport.ids(iface.id(), iface.providerApplicationId(), iface.consumerApplicationId()),
@@ -52,9 +54,5 @@ public class InterfaceWithoutRelationshipDetector implements Detector {
             }
         }
         return findings;
-    }
-
-    private static String unorderedPair(String a, String b) {
-        return a.compareTo(b) <= 0 ? a + "|" + b : b + "|" + a;
     }
 }

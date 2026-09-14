@@ -77,5 +77,4 @@ function FrameTabs({ activeFrame = 'application', onFrameChange, hasMatrixData =
   )
 }
 
-export { FRAMES }
 export default FrameTabs

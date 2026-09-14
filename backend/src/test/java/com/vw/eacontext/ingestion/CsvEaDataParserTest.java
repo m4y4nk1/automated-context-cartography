@@ -117,6 +117,43 @@ class CsvEaDataParserTest {
     }
 
     @Test
+    void duplicateHeaderColumnIsNoted() {
+        String withDuplicateHeader = """
+                ApplicationID,ApplicationName,BusinessDomain,BusinessDomain,BusinessCriticality,LifecycleStatus
+                APP-CRM,Customer CRM,Sales,Sales (duplicate col),Mission Critical,Active
+                """;
+        Map<String, InputStream> sources = new LinkedHashMap<>();
+        sources.put(APPLICATION, stream(withDuplicateHeader));
+
+        CanonicalModel model = parser.parse(sources);
+
+        assertThat(model.ingestionNotes()).anyMatch(note -> note.contains("more than one column named")
+                && note.contains("BusinessDomain") && note.contains("only the last is used"));
+    }
+
+    @Test
+    void missingRequiredColumnIsNotedDistinctlyFromABlankValue() {
+        // No BusinessDomain/BusinessCriticality/LifecycleStatus column at all —
+        // every row will read null for them, which is a structural gap distinct
+        // from a column that exists but is blank on some rows.
+        String missingRequiredColumns = """
+                ApplicationID,ApplicationName
+                APP-CRM,Customer CRM
+                """;
+        Map<String, InputStream> sources = new LinkedHashMap<>();
+        sources.put(APPLICATION, stream(missingRequiredColumns));
+
+        CanonicalModel model = parser.parse(sources);
+
+        assertThat(model.ingestionNotes())
+                .anyMatch(note -> note.contains("Required column for 'application.businessDomain'"));
+        assertThat(model.ingestionNotes())
+                .anyMatch(note -> note.contains("Required column for 'application.businessCriticality'"));
+        assertThat(model.ingestionNotes())
+                .anyMatch(note -> note.contains("Required column for 'application.lifecycleStatus'"));
+    }
+
+    @Test
     void parsesFromZipArchiveViaInterface() throws Exception {
         Map<String, String> files = new LinkedHashMap<>();
         files.put("applications.csv", APPLICATIONS_CSV);

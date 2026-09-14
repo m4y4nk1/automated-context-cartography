@@ -103,6 +103,8 @@ public class ApplicationEdgeAssembler {
             data.put("edgeTypes", List.of("INTERFACE"));
             data.put("protocols", presentOrEmpty(name(iface.protocol())));
             data.put("interfaceStatuses", presentOrEmpty(name(iface.interfaceStatus())));
+            data.put("dataFormats", presentOrEmpty(name(iface.dataFormat())));
+            data.put("frequencies", presentOrEmpty(name(iface.frequency())));
             edges.add(new GraphEdge(iface.id(), provider, consumer, iface.name(), TYPE_INTERFACE, data));
         }
 
@@ -117,6 +119,7 @@ public class ApplicationEdgeAssembler {
             data.put("memberIds", List.of(info.id()));
             data.put("edgeTypes", List.of("FLOW"));
             data.put("classifications", presentOrEmpty(name(info.classification())));
+            data.put("operations", presentOrEmpty(name(info.operation())));
             edges.add(new GraphEdge(info.id(), source, target, info.informationObject(), TYPE_FLOW, data));
         }
 

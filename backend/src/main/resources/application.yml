@@ -106,6 +106,16 @@ ea:
         description: Description
         severity: Severity
 
+    # Model fields the dataset report marks as required, beyond id/name (which
+    # already get a fallback + note in bindTo when no column matches at all).
+    # A required field with no matching column at all is flagged distinctly
+    # from a value that's merely blank on some rows once the column exists.
+    required-fields:
+      application: [businessDomain, businessCriticality, lifecycleStatus]
+      relationship: [relationshipType]
+      informationObject: [informationObject, classification]
+      dataQualityGap: [gapType]
+
     # Accepted source-column aliases per entity/model field. Matching is
     # normalized (case/space/underscore/camelCase-insensitive), so these seed
     # the resolver for CSV/JSON equivalents and arbitrary EA-like files alike,

@@ -3,9 +3,11 @@ package com.vw.eacontext.ingestion;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -44,7 +46,7 @@ public class ExcelEaDataParser implements EaDataParser {
 
     @Override
     public CanonicalModel parse(InputStream in) {
-        try (Workbook workbook = new XSSFWorkbook(in)) {
+        try (Workbook workbook = openWorkbook(in)) {
             IngestionSupport.Accumulator accumulator = new IngestionSupport.Accumulator();
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 readSheet(accumulator, workbook.getSheetAt(i));
@@ -61,6 +63,37 @@ public class ExcelEaDataParser implements EaDataParser {
             return model;
         } catch (IOException e) {
             throw new EaIngestionException("Failed to read Excel EA dataset", e);
+        }
+    }
+
+    /**
+     * Opens the workbook, translating POI's format-detection failures into one
+     * consistent {@link EaIngestionException} instead of leaking POI's internal
+     * exception types/messages.
+     *
+     * <p>POI signals "this isn't a valid .xlsx" via several different unchecked
+     * exception types depending on exactly how the content fails format
+     * detection — {@code OLE2NotOfficeXmlFileException} and
+     * {@code NotOfficeXmlFileException} (both {@code IllegalArgumentException}
+     * subtypes, e.g. a legacy {@code .xls} or Office-2003 XML file renamed
+     * {@code .xlsx}) and {@code POIXMLException} (a plain
+     * {@code RuntimeException}, e.g. an arbitrary ZIP renamed {@code .xlsx}
+     * with no OOXML content-types part). None of these extend
+     * {@code IOException}, so a plain {@code catch (IOException)} around the
+     * constructor lets them escape unwrapped — inconsistently, as either a
+     * generic 400 or an unhandled-exception 500 depending on which one — with
+     * POI's raw internal message reaching the caller instead of this parser's
+     * own. Scoped to just this one call so a genuine bug elsewhere in parsing
+     * still surfaces as a real, diagnosable error rather than being masked.
+     */
+    private Workbook openWorkbook(InputStream in) {
+        try {
+            return new XSSFWorkbook(in);
+        } catch (IOException e) {
+            throw new EaIngestionException("Failed to read Excel EA dataset", e);
+        } catch (RuntimeException e) {
+            throw new EaIngestionException(
+                    "Failed to read Excel EA dataset — the file doesn't look like a valid .xlsx workbook", e);
         }
     }
 
@@ -84,6 +117,12 @@ public class ExcelEaDataParser implements EaDataParser {
             log.warn("Sheet '{}' did not match any known entity; skipping", sheetName);
             accumulator.note("Sheet '" + sheetName + "' did not match any known entity and was skipped");
             return;
+        }
+        // Only noted once the sheet actually contributes data — a duplicate
+        // header on a sheet that doesn't bind to anything isn't worth flagging.
+        for (String duplicate : header.duplicateHeaders) {
+            accumulator.note("Sheet '" + sheetName + "' has more than one column named '" + duplicate
+                    + "'; only the first is used, the rest are ignored");
         }
         bindings.forEach(binding -> binding.notes().forEach(accumulator::note));
 
@@ -147,9 +186,14 @@ public class ExcelEaDataParser implements EaDataParser {
                 continue;
             }
             Map<String, Integer> index = new LinkedHashMap<>();
+            Set<String> seenNormalized = new HashSet<>();
+            List<String> duplicates = new ArrayList<>();
             for (Cell cell : row) {
                 String text = IngestionSupport.blankToNull(cellText(cell));
                 if (text != null) {
+                    if (!seenNormalized.add(IngestionSupport.normalize(text))) {
+                        duplicates.add(text);
+                    }
                     index.putIfAbsent(text, cell.getColumnIndex());
                 }
             }
@@ -161,7 +205,7 @@ public class ExcelEaDataParser implements EaDataParser {
             double score = candidate == null ? 0 : candidate.confidence() * index.size();
             if (score > bestScore) {
                 bestScore = score;
-                best = new HeaderRow(r, index);
+                best = new HeaderRow(r, index, duplicates);
             }
         }
         return best;
@@ -180,7 +224,12 @@ public class ExcelEaDataParser implements EaDataParser {
         return cell == null ? null : dataFormatter.formatCellValue(cell);
     }
 
-    /** A detected header row: its index plus the header-name -> column-index map. */
-    private record HeaderRow(int rowNum, Map<String, Integer> columnIndex) {
+    /**
+     * A detected header row: its index, the header-name -> column-index map,
+     * and any header text that appeared more than once (only the first
+     * occurrence of a duplicate is ever bound, per {@code columnIndex}'s
+     * {@code putIfAbsent} above — this list is purely diagnostic).
+     */
+    private record HeaderRow(int rowNum, Map<String, Integer> columnIndex, List<String> duplicateHeaders) {
     }
 }

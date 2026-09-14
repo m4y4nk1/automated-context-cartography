@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import com.vw.eacontext.dto.GraphEdge;
 import com.vw.eacontext.dto.GraphNode;
 import com.vw.eacontext.ingestion.JsonEaDataParser;
 import com.vw.eacontext.model.Application;
+import com.vw.eacontext.model.ApplicationOwnership;
 import com.vw.eacontext.model.CanonicalModel;
 import com.vw.eacontext.model.ProcessMapping;
 import com.vw.eacontext.model.Relationship;
@@ -79,6 +81,23 @@ class GraphProjectionServiceTest {
     }
 
     @Test
+    void interfaceAndFlowEdgesCarryFullFieldCoverage() {
+        GraphDto dto = projectionService.applicationView(model);
+
+        // IF-002 in the sample fixture: Protocol SOAP, DataFormat XML, Frequency
+        // "Daily batch" — protocol/interfaceStatus were already covered before
+        // this pass; dataFormat/frequency were the two fields ApplicationEdgeAssembler
+        // silently dropped.
+        GraphEdge iface = edge(dto, "IF-002");
+        assertThat(iface.data().get("dataFormats")).isEqualTo(List.of("XML"));
+        assertThat(iface.data().get("frequencies")).isEqualTo(List.of("DAILY_BATCH"));
+
+        // FLOW-002 in the sample fixture: Operation "Create".
+        GraphEdge flow = edge(dto, "FLOW-002");
+        assertThat(flow.data().get("operations")).isEqualTo(List.of("CREATE"));
+    }
+
+    @Test
     void ghostReferencesBecomePlaceholderNodesInsteadOfVanishing() {
         GraphDto dto = projectionService.applicationView(model);
 
@@ -112,6 +131,45 @@ class GraphProjectionServiceTest {
         GraphNode erp = node(dto, "APP-ERP");
         assertThat(erp.data().get("hasOwnershipRecord")).isEqualTo(false);
         assertThat(erp.data().get("applicationOwner")).isNull();
+    }
+
+    @Test
+    void applicationNodesExposeOwnershipRecordsOwnEmployeeIdSeparately() {
+        // Application.ownerEmployeeId and ApplicationOwnership.ownerEmployeeId are
+        // two distinct source fields meant to join to each other; a hand-built
+        // model where they disagree confirms both remain independently visible
+        // instead of one silently masking the other (see GraphProjectionService's
+        // applicationNode()).
+        CanonicalModel handBuilt = CanonicalModel.builder()
+                .applications(List.of(Application.builder()
+                        .id("APP-A").name("A").ownerEmployeeId("E-FROM-APP").build()))
+                .applicationOwnerships(List.of(ApplicationOwnership.builder()
+                        .id("OWN-1").applicationId("APP-A").ownerEmployeeId("E-FROM-OWNERSHIP").build()))
+                .build();
+
+        GraphDto dto = projectionService.applicationView(handBuilt);
+
+        GraphNode app = node(dto, "APP-A");
+        assertThat(app.data().get("ownerEmployeeId")).isEqualTo("E-FROM-APP");
+        assertThat(app.data().get("ownershipEmployeeId")).isEqualTo("E-FROM-OWNERSHIP");
+    }
+
+    @Test
+    void applicationNodesCarryDeclaredDataQualityGaps() {
+        GraphDto dto = projectionService.applicationView(model);
+
+        // DQ-002 in the sample fixture relates to APP-CRM.
+        GraphNode crm = node(dto, "APP-CRM");
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> gaps = (List<Map<String, Object>>) crm.data().get("declaredGaps");
+        assertThat(gaps).hasSize(1);
+        assertThat(gaps.get(0)).containsEntry("gapType", "Broken Relationship")
+                .containsEntry("severity", "HIGH");
+        assertThat(gaps.get(0).get("description")).asString().contains("APP-9001");
+
+        // APP-OMS has no declared gap in the sample fixture.
+        GraphNode oms = node(dto, "APP-OMS");
+        assertThat((List<?>) oms.data().get("declaredGaps")).isEmpty();
     }
 
     @Test

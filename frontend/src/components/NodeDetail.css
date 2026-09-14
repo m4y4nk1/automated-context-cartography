@@ -199,3 +199,34 @@
   margin-bottom: 0;
 }
 
+.node-detail-connections {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.node-detail-connection {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--panel-border);
+  font-size: 12px;
+}
+
+.node-detail-connection:last-child {
+  border-bottom: none;
+}
+
+.node-detail-connection-main {
+  font-weight: 600;
+  color: var(--panel-text);
+}
+
+.node-detail-connection-meta {
+  color: var(--muted-text);
+  font-size: 11px;
+}
+

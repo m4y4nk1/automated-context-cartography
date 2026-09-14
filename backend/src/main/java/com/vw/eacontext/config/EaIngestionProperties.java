@@ -42,6 +42,17 @@ public class EaIngestionProperties {
      */
     private Map<String, Map<String, List<String>>> aliases = new LinkedHashMap<>();
 
+    /**
+     * Per-entity list of model fields the dataset report marks as required,
+     * beyond {@code id}/{@code name} (which already get their own fallback +
+     * note in {@code bindTo} when no column matches at all). Used only to
+     * detect a required column that's entirely absent from a sheet's headers —
+     * distinct from, and reported separately from, a value that's merely blank
+     * on some rows once the column exists (see {@code ValidationService}'s
+     * per-row required-field checks for that).
+     */
+    private Map<String, List<String>> requiredFields = new LinkedHashMap<>();
+
     /** Heuristic entity-detection tuning. */
     private Matching matching = new Matching();
 
@@ -110,6 +121,11 @@ public class EaIngestionProperties {
     /** Configured JSON array name for an entity. */
     public String jsonArrayName(String entity) {
         return json.getArrays().get(entity);
+    }
+
+    /** Model fields configured as required for an entity (see {@link #requiredFields}). */
+    public List<String> requiredFields(String entity) {
+        return requiredFields.getOrDefault(entity, List.of());
     }
 
     /** Heuristic matching thresholds for schema-agnostic table detection. */

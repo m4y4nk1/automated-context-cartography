@@ -23,7 +23,8 @@ public class MissingOwnerFieldDetector implements Detector {
         List<Finding> findings = new ArrayList<>();
         for (Application app : model.applications()) {
             if (DetectorSupport.isBlank(app.ownerEmployeeId())) {
-                findings.add(new Finding(FindingType.MISSING_OWNER_FIELD, Severity.WARNING, List.of(app.id()),
+                findings.add(new Finding(FindingType.MISSING_OWNER_FIELD, Severity.WARNING,
+                        DetectorSupport.ids(app.id()),
                         "Application '" + app.id() + "' (" + app.name() + ") has a blank OwnerEmployeeID"));
             }
         }

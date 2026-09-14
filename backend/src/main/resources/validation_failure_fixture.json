@@ -1,0 +1,51 @@
+{
+  "metadata": {
+    "description": "Deliberately invalid dataset covering one instance of every validation failure mode this app checks for. Not a realistic EA dataset — used only by ValidationFailureFixtureTest to exercise the full validation surface end to end in one pass."
+  },
+  "applications": [
+    { "ApplicationID": "APP-VALID", "ApplicationName": "A Perfectly Valid App",
+      "BusinessDomain": "Sales", "BusinessCriticality": "Mission Critical", "LifecycleStatus": "Active" },
+    { "ApplicationID": "APP-DUPLICATE", "ApplicationName": "First Copy",
+      "BusinessDomain": "Sales", "BusinessCriticality": "Mission Critical", "LifecycleStatus": "Active" },
+    { "ApplicationID": "APP-DUPLICATE", "ApplicationName": "Second Copy (duplicate id)",
+      "BusinessDomain": "Sales", "BusinessCriticality": "Mission Critical", "LifecycleStatus": "Active" },
+    { "ApplicationID": "", "ApplicationName": "Blank Id App" },
+    { "ApplicationID": "APP-NO-NAME" },
+    { "ApplicationID": "APP-MISSING-REQUIRED-FIELDS", "ApplicationName": "Missing BusinessDomain/Criticality/Lifecycle" },
+    { "ApplicationID": "APP-BAD-ENUM", "ApplicationName": "Unrecognized Criticality Value",
+      "BusinessDomain": "Sales", "BusinessCriticality": "Not A Real Criticality Value", "LifecycleStatus": "Active" },
+    { "ApplicationID": "APP-BAD-DATE", "ApplicationName": "Unparseable Start Date",
+      "BusinessDomain": "Sales", "BusinessCriticality": "Mission Critical", "LifecycleStatus": "Active",
+      "LifecycleStartDate": "not-a-real-date" },
+    { "ApplicationID": "APP-BACKWARDS-DATES", "ApplicationName": "End Date Before Start Date",
+      "BusinessDomain": "Sales", "BusinessCriticality": "Mission Critical", "LifecycleStatus": "Active",
+      "LifecycleStartDate": "2024-01-01", "LifecycleEndDate": "2023-01-01" }
+  ],
+  "relationships": [
+    { "RelationshipID": "REL-BOTH-ENDS-GHOST", "SourceApplicationID": "APP-GHOST-REL-SOURCE",
+      "RelationshipType": "depends on", "TargetApplicationID": "APP-GHOST-REL-TARGET" },
+    { "RelationshipID": "REL-MISSING-TYPE", "SourceApplicationID": "APP-VALID",
+      "TargetApplicationID": "APP-DUPLICATE" }
+  ],
+  "interfaces": [
+    { "InterfaceID": "IF-BOTH-ENDS-GHOST", "InterfaceName": "Both Ends Unresolved",
+      "ProviderApplicationID": "APP-GHOST-IF-PROVIDER", "ConsumerApplicationID": "APP-GHOST-IF-CONSUMER" },
+    { "InterfaceID": "IF-NO-NAME", "ProviderApplicationID": "APP-VALID", "ConsumerApplicationID": "APP-DUPLICATE" }
+  ],
+  "informationObjects": [
+    { "FlowID": "FLOW-EVERYTHING-BROKEN", "SourceApplicationID": "APP-GHOST-FLOW-SOURCE",
+      "TargetApplicationID": "APP-GHOST-FLOW-TARGET", "InterfaceID": "IF-GHOST-NOT-REAL" }
+  ],
+  "businessProcesses": [
+    { "ProcessMappingID": "BPM-001", "BusinessProcessID": "BP-01", "BusinessProcessName": "A Real Process",
+      "SupportingApplicationID": "APP-VALID", "RoleOfApplication": "Primary" },
+    { "ProcessMappingID": "BPM-GHOST-APP", "BusinessProcessID": "BP-01", "BusinessProcessName": "A Real Process",
+      "SupportingApplicationID": "APP-GHOST-SUPPORTING", "RoleOfApplication": "Supporting" }
+  ],
+  "applicationOwnerships": [
+    { "OwnershipID": "OWN-GHOST-APP", "ApplicationID": "APP-GHOST-OWNERSHIP", "ApplicationOwner": "Nobody" }
+  ],
+  "dataQualityGaps": [
+    { "GapID": "DQ-MISSING-TYPE", "EntityType": "Application", "EntityID": "APP-VALID" }
+  ]
+}

@@ -20,6 +20,7 @@ import com.vw.eacontext.model.Application;
 import com.vw.eacontext.model.ApplicationOwnership;
 import com.vw.eacontext.model.BusinessProcess;
 import com.vw.eacontext.model.CanonicalModel;
+import com.vw.eacontext.model.DataQualityGap;
 import com.vw.eacontext.model.InformationObject;
 import com.vw.eacontext.model.Interface;
 import com.vw.eacontext.model.ProcessMapping;
@@ -85,12 +86,13 @@ public class GraphProjectionService {
      */
     public GraphDto applicationView(CanonicalModel model, Graph<Application, RelationshipEdge> graph) {
         Map<String, ApplicationOwnership> ownershipByAppId = indexOwnership(model);
+        Map<String, List<DataQualityGap>> gapsByAppId = indexGaps(model);
         GhostReferences ghosts = ghostReferenceResolver.resolve(model);
 
         List<GraphNode> nodes = new ArrayList<>();
         Set<String> nodeIds = new LinkedHashSet<>();
         for (Application app : graph.vertexSet()) {
-            nodes.add(applicationNode(app, ownershipByAppId));
+            nodes.add(applicationNode(app, ownershipByAppId, gapsByAppId));
             nodeIds.add(app.id());
         }
         // Offer the ghosts as candidate endpoints, then keep only the ones an
@@ -114,6 +116,7 @@ public class GraphProjectionService {
     public GraphDto businessProcessView(CanonicalModel model) {
         Map<String, Application> appById = indexApplications(model);
         Map<String, ApplicationOwnership> ownershipByAppId = indexOwnership(model);
+        Map<String, List<DataQualityGap>> gapsByAppId = indexGaps(model);
         Map<String, BusinessProcess> processById = new LinkedHashMap<>();
         for (BusinessProcess process : model.businessProcesses()) {
             if (!isBlank(process.id())) {
@@ -164,7 +167,7 @@ public class GraphProjectionService {
             if (addedApps.add(appId)) {
                 nodes.add(app == null
                         ? ghostNode(appId, ghosts)
-                        : applicationNode(app, ownershipByAppId));
+                        : applicationNode(app, ownershipByAppId, gapsByAppId));
             }
             Map<String, Object> data = GraphNode.attrs();
             data.put("roleOfApplication",
@@ -294,6 +297,7 @@ public class GraphProjectionService {
     public GraphDto informationFlowView(CanonicalModel model) {
         Map<String, Application> appById = indexApplications(model);
         Map<String, ApplicationOwnership> ownershipByAppId = indexOwnership(model);
+        Map<String, List<DataQualityGap>> gapsByAppId = indexGaps(model);
         Map<String, Interface> interfaceById = new HashMap<>();
         for (Interface iface : model.interfaces()) {
             if (!isBlank(iface.id())) {
@@ -318,9 +322,9 @@ public class GraphProjectionService {
                 continue;
             }
             nodes.putIfAbsent(sourceId, source == null
-                    ? ghostNode(sourceId, ghosts) : applicationNode(source, ownershipByAppId));
+                    ? ghostNode(sourceId, ghosts) : applicationNode(source, ownershipByAppId, gapsByAppId));
             nodes.putIfAbsent(targetId, target == null
-                    ? ghostNode(targetId, ghosts) : applicationNode(target, ownershipByAppId));
+                    ? ghostNode(targetId, ghosts) : applicationNode(target, ownershipByAppId, gapsByAppId));
 
             String ioId = "IO:" + info.informationObject();
             nodes.computeIfAbsent(ioId, id -> {
@@ -346,7 +350,8 @@ public class GraphProjectionService {
 
     // --- helpers --------------------------------------------------------------
 
-    private GraphNode applicationNode(Application app, Map<String, ApplicationOwnership> ownershipByAppId) {
+    private GraphNode applicationNode(Application app, Map<String, ApplicationOwnership> ownershipByAppId,
+                                      Map<String, List<DataQualityGap>> gapsByAppId) {
         Map<String, Object> data = GraphNode.attrs();
         data.put("description", app.description());
         data.put("businessDomain", app.businessDomain());
@@ -364,13 +369,32 @@ public class GraphProjectionService {
         ApplicationOwnership ownership = ownershipByAppId.get(app.id());
         data.put("hasOwnershipRecord", ownership != null);
         data.put("applicationOwner", ownership == null ? null : ownership.applicationOwner());
+        // The ownership record's own employee id — distinct from
+        // Application.ownerEmployeeId above, which is the app record's own
+        // (separately-sourced) claim. The dataset intends these to join to
+        // each other; keeping both visible rather than silently preferring
+        // one lets a mismatch between them be seen instead of hidden.
+        data.put("ownershipEmployeeId", ownership == null ? null : ownership.ownerEmployeeId());
         data.put("systemCustodian", ownership == null ? null : ownership.systemCustodian());
         data.put("businessOwner", ownership == null ? null : ownership.businessOwner());
         data.put("supportGroup", ownership == null ? null : ownership.supportGroup());
         data.put("department", ownership == null ? null : ownership.department());
 
+        data.put("declaredGaps", gapsByAppId.getOrDefault(app.id(), List.of()).stream()
+                .map(GraphProjectionService::declaredGapAttrs)
+                .toList());
+
         data.putAll(app.attributes());
         return new GraphNode(app.id(), app.name(), TYPE_APPLICATION, data);
+    }
+
+    /** One {@link DataQualityGap} reduced to the fields worth showing on an application popup. */
+    private static Map<String, Object> declaredGapAttrs(DataQualityGap gap) {
+        Map<String, Object> attrs = GraphNode.attrs();
+        attrs.put("gapType", gap.gapType());
+        attrs.put("description", gap.description());
+        attrs.put("severity", gap.severity() == null ? null : gap.severity().name());
+        return attrs;
     }
 
     /**
@@ -420,6 +444,17 @@ public class GraphProjectionService {
         for (ApplicationOwnership ownership : model.applicationOwnerships()) {
             if (!isBlank(ownership.applicationId())) {
                 byAppId.putIfAbsent(ownership.applicationId(), ownership);
+            }
+        }
+        return byAppId;
+    }
+
+    /** Declared {@code KnownDataQualityGaps} rows, grouped by the application they relate to. */
+    private Map<String, List<DataQualityGap>> indexGaps(CanonicalModel model) {
+        Map<String, List<DataQualityGap>> byAppId = new LinkedHashMap<>();
+        for (DataQualityGap gap : model.dataQualityGaps()) {
+            if (!isBlank(gap.relatedApplicationId())) {
+                byAppId.computeIfAbsent(gap.relatedApplicationId(), id -> new ArrayList<>()).add(gap);
             }
         }
         return byAppId;

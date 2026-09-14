@@ -3,6 +3,7 @@ package com.vw.eacontext.insight;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 
 import com.vw.eacontext.ingestion.JsonEaDataParser;
+import com.vw.eacontext.model.Application;
 import com.vw.eacontext.model.CanonicalModel;
+import com.vw.eacontext.model.LifecycleStatus;
 import com.vw.eacontext.validation.Severity;
 
 @SpringBootTest
@@ -113,6 +116,31 @@ class InsightServiceTest {
         // counts as declared and IF-006 must not be flagged either.
         assertThat(relatedIds(FindingType.INTERFACE_WITHOUT_RELATIONSHIP))
                 .doesNotContain("IF-002", "IF-005", "IF-006");
+    }
+
+    @Test
+    void blankIdApplicationNeverCrashesADetectorInsteadOfBeingSkipped() {
+        // A blank/missing Application id is something ValidationService
+        // reports as an ERROR rather than rejecting outright (see
+        // ValidationServiceTest) — so a model like this one genuinely reaches
+        // InsightService in practice. Several detectors build each Finding's
+        // relatedEntityIds from the application's own id; this application is
+        // crafted to satisfy MissingOwnerFieldDetector (blank ownerEmployeeId)
+        // and LifecycleInconsistencyDetector (Active, end date in the past)
+        // simultaneously, since a null id previously reached List.of(app.id())
+        // in both and threw NullPointerException instead of the app.id()-less
+        // row simply being left out of that detector's findings.
+        Application blankId = Application.builder()
+                .id(null)
+                .name("No Id At All")
+                .lifecycleStatus(LifecycleStatus.ACTIVE)
+                .lifecycleEndDate(LocalDate.now().minusDays(1))
+                .build();
+        CanonicalModel model = CanonicalModel.builder().applications(List.of(blankId)).build();
+
+        List<Finding> result = insightService.analyze(model);
+
+        assertThat(result.stream().flatMap(f -> f.relatedEntityIds().stream())).doesNotContainNull();
     }
 
     private List<Finding> of(FindingType type) {

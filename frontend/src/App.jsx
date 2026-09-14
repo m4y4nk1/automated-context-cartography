@@ -2,11 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ListFilter, PanelRightOpen, X } from 'lucide-react'
 import AnchorPicker from './components/AnchorPicker'
 import DashboardCards from './components/DashboardCards'
+import EdgePopupDialog from './components/EdgePopupDialog'
 import FrameTabs from './components/FrameTabs'
 import FilterPanel from './components/FilterPanel'
 import ExportButton from './components/ExportButton'
 import GraphCanvas from './components/GraphCanvas'
 import InsightsPanel from './components/InsightsPanel'
+import LoadingScreen from './components/LoadingScreen'
 import NodePopupDialog from './components/NodePopupDialog'
 import Toast from './components/Toast'
 import UploadPage from './components/UploadPage'
@@ -146,6 +148,12 @@ function Workspace({ initialReport }) {
   const [selectedNode, setSelectedNode] = useState(null)
   // Controls the NodePopupDialog shown when a node is tapped on the graph.
   const [nodePopupOpen, setNodePopupOpen] = useState(false)
+  const [selectedEdge, setSelectedEdge] = useState(null)
+  // Controls the EdgePopupDialog shown when a relationship/interface/flow
+  // edge is tapped. GraphCanvas already keeps node and edge selection
+  // mutually exclusive (each tap handler clears the other), so only one of
+  // the two popups is ever open at a time.
+  const [edgePopupOpen, setEdgePopupOpen] = useState(false)
   const [toast, setToast] = useState(() => uploadToast(initialReport))
   // Holds the live Cytoscape instance for client-side PNG export.
   const cyRef = useRef(null)
@@ -220,6 +228,17 @@ function Workspace({ initialReport }) {
 
   const closeNodePopup = () => {
     setNodePopupOpen(false)
+  }
+
+  // Called by GraphCanvas on edge tap (edge data) or whenever selection is
+  // cleared (node tap, background tap, frame change).
+  const handleEdgeSelect = (edge) => {
+    setSelectedEdge(edge)
+    setEdgePopupOpen(Boolean(edge))
+  }
+
+  const closeEdgePopup = () => {
+    setEdgePopupOpen(false)
   }
 
   useEffect(() => {
@@ -314,6 +333,7 @@ function Workspace({ initialReport }) {
               focusedNodeIds={focusedIssueNodeIds}
               filters={filters}
               onNodeSelect={handleNodeSelect}
+              onEdgeSelect={handleEdgeSelect}
               onFocusMiss={() => {
                 // Unresolvable references now render as placeholder nodes in
                 // whichever frame declares them, so a miss is almost always a
@@ -389,6 +409,13 @@ function Workspace({ initialReport }) {
         onClose={closeNodePopup}
       />
 
+      <EdgePopupDialog
+        open={edgePopupOpen}
+        edge={selectedEdge}
+        findings={findings}
+        onClose={closeEdgePopup}
+      />
+
       {toast && (
         <Toast
           message={toast.message}
@@ -402,9 +429,25 @@ function Workspace({ initialReport }) {
 
 function App() {
   const [initialReport, setInitialReport] = useState(null)
+  // A brief cosmetic hand-off between the upload flow and the workspace —
+  // not gated on real data readiness (Workspace's own panels each have
+  // their own loading state once mounted), just enough to make the jump
+  // from the validation summary feel deliberate rather than an instant cut.
+  const [transitioning, setTransitioning] = useState(false)
+
+  if (transitioning) {
+    return <LoadingScreen onDone={() => setTransitioning(false)} />
+  }
 
   if (!initialReport) {
-    return <UploadPage onUploaded={setInitialReport} />
+    return (
+      <UploadPage
+        onUploaded={(report) => {
+          setInitialReport(report)
+          setTransitioning(true)
+        }}
+      />
+    )
   }
 
   return <Workspace initialReport={initialReport} />

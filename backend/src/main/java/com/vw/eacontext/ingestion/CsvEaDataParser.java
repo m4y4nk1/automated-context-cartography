@@ -8,8 +8,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -138,6 +140,15 @@ public class CsvEaDataParser implements EaDataParser {
                 accumulator.note("CSV '" + label + "' did not match any known entity and was skipped");
                 return;
             }
+            // Only noted once the file actually contributes data. commons-csv
+            // resolves a duplicate header name to its LAST occurrence (the
+            // opposite tie-break from Excel's first-wins) — not changed here,
+            // only surfaced.
+            String csvLabel = tableName != null ? tableName : String.valueOf(explicitEntities);
+            for (String duplicate : duplicateHeaders(headers)) {
+                accumulator.note("CSV '" + csvLabel + "' has more than one column named '" + duplicate
+                        + "'; only the last is used, the rest are ignored");
+            }
             bindings.forEach(binding -> binding.notes().forEach(accumulator::note));
 
             for (CSVRecord row : parser) {
@@ -161,6 +172,18 @@ public class CsvEaDataParser implements EaDataParser {
                 model.processMappings().size(), model.applicationOwnerships().size(),
                 model.dataQualityGaps().size());
         return model;
+    }
+
+    /** Header text (normalized) that appears more than once, in first-seen order, no duplicates in the result. */
+    private static List<String> duplicateHeaders(List<String> headers) {
+        Set<String> seenNormalized = new LinkedHashSet<>();
+        List<String> duplicates = new ArrayList<>();
+        for (String header : headers) {
+            if (!seenNormalized.add(IngestionSupport.normalize(header)) && !duplicates.contains(header)) {
+                duplicates.add(header);
+            }
+        }
+        return duplicates;
     }
 
     private static String baseName(String path) {

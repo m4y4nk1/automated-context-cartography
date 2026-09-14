@@ -454,6 +454,10 @@ function applyActiveFilterHighlight(cy, hasActiveFilter, matchedNodeIds) {
  *   lifecycleStatuses, hosting, classification }) applied to the active frame.
  * @param {(node: object | null) => void} [props.onNodeSelect] - Called with the
  *   selected node's data on tap, or null when the selection is cleared.
+ * @param {(edge: object | null) => void} [props.onEdgeSelect] - Called with the
+ *   selected edge's data (plus resolved endpoint labels) on tap, or null when
+ *   the selection is cleared. Selecting a node clears any edge selection and
+ *   vice versa, so only one popup is ever open at a time.
  * @param {(cy: object | null) => void} [props.onReady] - Called with the Cytoscape
  *   instance once initialized (and null on unmount), e.g. for PNG export.
  * @param {() => void} [props.onFocusMiss] - Called when focusedNodeIds is set
@@ -469,6 +473,7 @@ function GraphCanvas({
   focusedNodeIds = null,
   filters,
   onNodeSelect,
+  onEdgeSelect,
   onReady,
   onFocusMiss,
 }) {
@@ -477,8 +482,8 @@ function GraphCanvas({
   // Guards against stale async getNodeImpact() responses.
   const impactTokenRef = useRef(0)
   // Keep the latest callbacks/frame without forcing the graph to re-init.
-  const handlersRef = useRef({ onNodeSelect, frame, onReady, onFocusMiss })
-  handlersRef.current = { onNodeSelect, frame, onReady, onFocusMiss }
+  const handlersRef = useRef({ onNodeSelect, onEdgeSelect, frame, onReady, onFocusMiss })
+  handlersRef.current = { onNodeSelect, onEdgeSelect, frame, onReady, onFocusMiss }
 
   // Initialize Cytoscape once, tear it down on unmount.
   useEffect(() => {
@@ -496,10 +501,25 @@ function GraphCanvas({
     cy.on('tap', 'node', (e) => {
       const node = e.target
       const id = node.id()
-      const { onNodeSelect: onSelect, frame: activeFrame } = handlersRef.current
+      const { onNodeSelect: onSelect, onEdgeSelect: onEdge, frame: activeFrame } = handlersRef.current
 
-      // Emit the node data enriched with its connection count (graph degree).
-      onSelect?.({ ...node.data(), connections: node.degree(false) })
+      // Emit the node data enriched with its connection count (graph degree)
+      // and, for the application frame, a per-connection breakdown (which
+      // application, via what kind of edge, with its key business metadata)
+      // rather than just the bare count.
+      const connectionsDetail = node.connectedEdges().map((connectedEdge) => {
+        const data = connectedEdge.data()
+        const outgoing = data.source === id
+        const otherEnd = outgoing ? connectedEdge.target() : connectedEdge.source()
+        return {
+          ...data,
+          direction: outgoing ? 'outgoing' : 'incoming',
+          otherId: otherEnd.id(),
+          otherLabel: otherEnd.data('label'),
+        }
+      })
+      onSelect?.({ ...node.data(), connections: node.degree(false), connectionsDetail })
+      onEdge?.(null)
       clearHighlight(cy)
 
       // Applications resolve a real blast radius from the backend; other frames
@@ -519,6 +539,17 @@ function GraphCanvas({
       }
     })
 
+    cy.on('tap', 'edge', (e) => {
+      const edge = e.target
+      const { onNodeSelect: onSelect, onEdgeSelect: onEdge } = handlersRef.current
+      onEdge?.({
+        ...edge.data(),
+        sourceLabel: edge.source().data('label'),
+        targetLabel: edge.target().data('label'),
+      })
+      onSelect?.(null)
+    })
+
     cy.on('tap', (e) => {
       if (e.target !== cy) return
       // Background click: invalidate any pending impact request and reset.
@@ -526,6 +557,7 @@ function GraphCanvas({
       clearHighlight(cy)
       cy.$(':selected').unselect()
       handlersRef.current.onNodeSelect?.(null)
+      handlersRef.current.onEdgeSelect?.(null)
     })
 
     return () => {
@@ -543,6 +575,7 @@ function GraphCanvas({
     // A new projection clears any active selection/highlight.
     impactTokenRef.current += 1
     handlersRef.current.onNodeSelect?.(null)
+    handlersRef.current.onEdgeSelect?.(null)
 
     cy.batch(() => {
       cy.elements().remove()

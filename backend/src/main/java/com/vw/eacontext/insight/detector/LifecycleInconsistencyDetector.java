@@ -36,7 +36,8 @@ public class LifecycleInconsistencyDetector implements Detector {
         for (Application app : model.applications()) {
             if (app.lifecycleStatus() == LifecycleStatus.ACTIVE && app.lifecycleEndDate() != null
                     && app.lifecycleEndDate().isBefore(cutoff)) {
-                findings.add(new Finding(FindingType.LIFECYCLE_INCONSISTENCY, Severity.WARNING, List.of(app.id()),
+                findings.add(new Finding(FindingType.LIFECYCLE_INCONSISTENCY, Severity.WARNING,
+                        DetectorSupport.ids(app.id()),
                         "Application '" + app.id() + "' (" + app.name() + ") is Active but its lifecycle end date "
                                 + app.lifecycleEndDate() + " has already passed"));
             }

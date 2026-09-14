@@ -103,6 +103,15 @@ public final class IngestionSupport {
         return resolved;
     }
 
+    /** {@link #lifecycleStatus(String)}, also noting an unrecognized non-blank value. */
+    private static LifecycleStatus lifecycleStatus(String raw, String recordLabel, List<String> notes) {
+        LifecycleStatus resolved = lifecycleStatus(raw);
+        if (resolved == null && blankToNull(raw) != null) {
+            notes.add(recordLabel + " has an unrecognized 'lifecycleStatus' value '" + raw + "'; leaving unset");
+        }
+        return resolved;
+    }
+
     /**
      * Generic enum-safe parser: matches {@code raw} against an enum's constant
      * names after normalizing both sides (case/space/punctuation-insensitive),
@@ -133,6 +142,22 @@ public final class IngestionSupport {
     }
 
     /**
+     * {@link #enumFromLabel(Class, String)}, additionally appending a note when
+     * a non-blank value was present but not recognized — the parsing behavior
+     * (silent {@code null}) is unchanged, this only makes the rejection visible
+     * to {@link com.vw.eacontext.validation.ValidationService} instead of only
+     * a server log line.
+     */
+    private static <T extends Enum<T>> T enumFromLabel(Class<T> type, String raw, String recordLabel,
+                                                        String fieldName, List<String> notes) {
+        T result = enumFromLabel(type, raw);
+        if (result == null && blankToNull(raw) != null) {
+            notes.add(recordLabel + " has an unrecognized '" + fieldName + "' value '" + raw + "'; leaving unset");
+        }
+        return result;
+    }
+
+    /**
      * Parses a date carried as a plain source string (ISO first, then a small
      * set of common spreadsheet renderings). Never throws — an unparseable
      * value is logged as a warning and resolves to {@code null}.
@@ -151,6 +176,20 @@ public final class IngestionSupport {
         }
         log.warn("Unparseable date '{}'; leaving unset", raw);
         return null;
+    }
+
+    /** {@link #parseIsoDate(String)}, additionally noting an unparseable non-blank value. */
+    private static LocalDate parseIsoDate(String raw, String recordLabel, String fieldName, List<String> notes) {
+        LocalDate result = parseIsoDate(raw);
+        if (result == null && blankToNull(raw) != null) {
+            notes.add(recordLabel + " has an unparseable '" + fieldName + "' value '" + raw + "'; leaving unset");
+        }
+        return result;
+    }
+
+    /** Builds a record's context label for ingestion notes, e.g. {@code "Application 'APP-0005'"}. */
+    private static String recordLabel(String entityLabel, String id) {
+        return entityLabel + " '" + (blankToNull(id) == null ? "<no id>" : id) + "'";
     }
 
     // --- Foreign-key resolution ------------------------------------------------
@@ -395,6 +434,16 @@ public final class IngestionSupport {
             }
         }
 
+        // A required field with no column at all is a structural gap (every row
+        // will read null for it) — distinct from, and worth flagging separately
+        // from, a value that's merely blank on some rows once the column exists.
+        for (String required : properties.requiredFields(entity)) {
+            if (!fieldToColumn.containsKey(required)) {
+                notes.add("Required column for '" + entity + "." + required
+                        + "' was not found in the sheet; every row will have a blank value for it");
+            }
+        }
+
         List<String> extras = new ArrayList<>();
         for (String header : headers) {
             if (!boundColumns.contains(normalize(header))) {
@@ -455,17 +504,29 @@ public final class IngestionSupport {
     // --- Format-agnostic entity builders --------------------------------------
 
     public static Application toApplication(RowReader read) {
+        return toApplication(read, new ArrayList<>());
+    }
+
+    /**
+     * @param notes collects a note for any non-blank date/enum value that was
+     *              present but not recognized (parsing behavior itself is
+     *              unchanged — always {@code null} on rejection, never thrown)
+     */
+    public static Application toApplication(RowReader read, List<String> notes) {
+        String id = read.value("id");
+        String label = recordLabel("Application", id);
         return Application.builder()
-                .id(read.value("id"))
+                .id(id)
                 .name(read.value("name"))
                 .description(read.value("description"))
                 .businessDomain(read.value("businessDomain"))
-                .businessCriticality(enumFromLabel(BusinessCriticality.class, read.value("businessCriticality")))
-                .lifecycleStatus(lifecycleStatus(read.value("lifecycleStatus")))
-                .lifecycleStartDate(parseIsoDate(read.value("lifecycleStartDate")))
-                .lifecycleEndDate(parseIsoDate(read.value("lifecycleEndDate")))
-                .hosting(enumFromLabel(Hosting.class, read.value("hosting")))
-                .vendorType(enumFromLabel(VendorType.class, read.value("vendorType")))
+                .businessCriticality(enumFromLabel(BusinessCriticality.class, read.value("businessCriticality"),
+                        label, "businessCriticality", notes))
+                .lifecycleStatus(lifecycleStatus(read.value("lifecycleStatus"), label, notes))
+                .lifecycleStartDate(parseIsoDate(read.value("lifecycleStartDate"), label, "lifecycleStartDate", notes))
+                .lifecycleEndDate(parseIsoDate(read.value("lifecycleEndDate"), label, "lifecycleEndDate", notes))
+                .hosting(enumFromLabel(Hosting.class, read.value("hosting"), label, "hosting", notes))
+                .vendorType(enumFromLabel(VendorType.class, read.value("vendorType"), label, "vendorType", notes))
                 .ownerEmployeeId(read.value("ownerEmployeeId"))
                 .costCenter(read.value("costCenter"))
                 .attributes(read.extras())
@@ -473,38 +534,60 @@ public final class IngestionSupport {
     }
 
     public static Relationship toRelationship(RowReader read) {
+        return toRelationship(read, new ArrayList<>());
+    }
+
+    public static Relationship toRelationship(RowReader read, List<String> notes) {
+        String id = read.value("id");
+        String label = recordLabel("Relationship", id);
         return Relationship.builder()
-                .id(read.value("id"))
+                .id(id)
                 .sourceApplicationId(read.value("sourceApplicationId"))
-                .relationshipType(enumFromLabel(RelationshipType.class, read.value("relationshipType")))
+                .relationshipType(enumFromLabel(RelationshipType.class, read.value("relationshipType"),
+                        label, "relationshipType", notes))
                 .targetApplicationId(read.value("targetApplicationId"))
-                .dependencyCriticality(enumFromLabel(DependencyCriticality.class, read.value("dependencyCriticality")))
+                .dependencyCriticality(enumFromLabel(DependencyCriticality.class,
+                        read.value("dependencyCriticality"), label, "dependencyCriticality", notes))
                 .attributes(read.extras())
                 .build();
     }
 
     public static Interface toInterface(RowReader read) {
+        return toInterface(read, new ArrayList<>());
+    }
+
+    public static Interface toInterface(RowReader read, List<String> notes) {
+        String id = read.value("id");
+        String label = recordLabel("Interface", id);
         return Interface.builder()
-                .id(read.value("id"))
+                .id(id)
                 .name(read.value("name"))
                 .providerApplicationId(read.value("providerApplicationId"))
                 .consumerApplicationId(read.value("consumerApplicationId"))
-                .protocol(enumFromLabel(Protocol.class, read.value("protocol")))
-                .dataFormat(enumFromLabel(DataFormat.class, read.value("dataFormat")))
-                .frequency(enumFromLabel(Frequency.class, read.value("frequency")))
-                .interfaceStatus(enumFromLabel(InterfaceStatus.class, read.value("interfaceStatus")))
+                .protocol(enumFromLabel(Protocol.class, read.value("protocol"), label, "protocol", notes))
+                .dataFormat(enumFromLabel(DataFormat.class, read.value("dataFormat"), label, "dataFormat", notes))
+                .frequency(enumFromLabel(Frequency.class, read.value("frequency"), label, "frequency", notes))
+                .interfaceStatus(enumFromLabel(InterfaceStatus.class, read.value("interfaceStatus"),
+                        label, "interfaceStatus", notes))
                 .attributes(read.extras())
                 .build();
     }
 
     public static InformationObject toInformationObject(RowReader read) {
+        return toInformationObject(read, new ArrayList<>());
+    }
+
+    public static InformationObject toInformationObject(RowReader read, List<String> notes) {
+        String id = read.value("id");
+        String label = recordLabel("InformationObject", id);
         return InformationObject.builder()
-                .id(read.value("id"))
+                .id(id)
                 .informationObject(read.value("informationObject"))
-                .classification(enumFromLabel(Classification.class, read.value("classification")))
+                .classification(enumFromLabel(Classification.class, read.value("classification"),
+                        label, "classification", notes))
                 .sourceApplicationId(read.value("sourceApplicationId"))
                 .targetApplicationId(read.value("targetApplicationId"))
-                .operation(enumFromLabel(Operation.class, read.value("operation")))
+                .operation(enumFromLabel(Operation.class, read.value("operation"), label, "operation", notes))
                 .interfaceId(read.value("interfaceId"))
                 .attributes(read.extras())
                 .build();
@@ -520,12 +603,20 @@ public final class IngestionSupport {
     }
 
     public static ProcessMapping toProcessMapping(RowReader read) {
+        return toProcessMapping(read, new ArrayList<>());
+    }
+
+    public static ProcessMapping toProcessMapping(RowReader read, List<String> notes) {
+        String id = read.value("id");
+        String label = recordLabel("ProcessMapping", id);
         return ProcessMapping.builder()
-                .id(read.value("id"))
+                .id(id)
                 .businessProcessId(read.value("businessProcessId"))
                 .supportingApplicationId(read.value("supportingApplicationId"))
-                .roleOfApplication(enumFromLabel(RoleOfApplication.class, read.value("roleOfApplication")))
-                .processCriticality(enumFromLabel(ProcessCriticality.class, read.value("processCriticality")))
+                .roleOfApplication(enumFromLabel(RoleOfApplication.class, read.value("roleOfApplication"),
+                        label, "roleOfApplication", notes))
+                .processCriticality(enumFromLabel(ProcessCriticality.class, read.value("processCriticality"),
+                        label, "processCriticality", notes))
                 .attributes(read.extras())
                 .build();
     }
@@ -545,14 +636,20 @@ public final class IngestionSupport {
     }
 
     public static DataQualityGap toDataQualityGap(RowReader read) {
+        return toDataQualityGap(read, new ArrayList<>());
+    }
+
+    public static DataQualityGap toDataQualityGap(RowReader read, List<String> notes) {
+        String id = read.value("id");
+        String label = recordLabel("DataQualityGap", id);
         return DataQualityGap.builder()
-                .id(read.value("id"))
+                .id(id)
                 .gapType(read.value("gapType"))
                 .entityType(read.value("entityType"))
                 .entityId(read.value("entityId"))
                 .relatedApplicationId(read.value("relatedApplicationId"))
                 .description(read.value("description"))
-                .severity(enumFromLabel(DependencyCriticality.class, read.value("severity")))
+                .severity(enumFromLabel(DependencyCriticality.class, read.value("severity"), label, "severity", notes))
                 .attributes(read.extras())
                 .build();
     }
@@ -578,14 +675,14 @@ public final class IngestionSupport {
 
         public void add(String entity, RowReader read) {
             switch (entity) {
-                case APPLICATION -> applications.add(toApplication(read));
-                case RELATIONSHIP -> relationships.add(toRelationship(read));
-                case INTERFACE -> interfaces.add(toInterface(read));
-                case INFORMATION_OBJECT -> informationObjects.add(toInformationObject(read));
+                case APPLICATION -> applications.add(toApplication(read, notes));
+                case RELATIONSHIP -> relationships.add(toRelationship(read, notes));
+                case INTERFACE -> interfaces.add(toInterface(read, notes));
+                case INFORMATION_OBJECT -> informationObjects.add(toInformationObject(read, notes));
                 case BUSINESS_PROCESS -> addBusinessProcess(toBusinessProcess(read));
-                case PROCESS_MAPPING -> processMappings.add(toProcessMapping(read));
+                case PROCESS_MAPPING -> processMappings.add(toProcessMapping(read, notes));
                 case APPLICATION_OWNERSHIP -> applicationOwnerships.add(toApplicationOwnership(read));
-                case DATA_QUALITY_GAP -> dataQualityGaps.add(toDataQualityGap(read));
+                case DATA_QUALITY_GAP -> dataQualityGaps.add(toDataQualityGap(read, notes));
                 default -> log.warn("No builder registered for entity '{}'; row skipped", entity);
             }
         }

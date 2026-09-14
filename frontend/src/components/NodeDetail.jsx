@@ -35,6 +35,35 @@ function humanizeEnum(value) {
 }
 
 /**
+ * A connection's kind, from the backend-provided `edgeTypes` category
+ * (`DEPENDENCY` | `INTERFACE` | `FLOW`) rather than the raw `type` field,
+ * which for a dependency edge is the specific `RelationshipType` name (e.g.
+ * `DEPENDS_ON`) and varies per row.
+ */
+function connectionKindLabel(conn) {
+  const kind = conn.edgeTypes?.[0]
+  if (kind === 'INTERFACE') return 'Interface'
+  if (kind === 'FLOW') return 'Information flow'
+  if (kind === 'DEPENDENCY') return humanizeEnum(conn.type) || 'Dependency'
+  return conn.type ?? 'Connection'
+}
+
+/** One line of the connection's most relevant business metadata, by kind. */
+function connectionSummary(conn) {
+  const kind = conn.edgeTypes?.[0]
+  if (kind === 'DEPENDENCY') {
+    return conn.dependencyCriticality ? `${humanizeEnum(conn.dependencyCriticality)} criticality` : null
+  }
+  if (kind === 'INTERFACE') {
+    return conn.protocols?.[0] ?? null
+  }
+  if (kind === 'FLOW') {
+    return conn.classifications?.[0] ? humanizeEnum(conn.classifications[0]) : null
+  }
+  return null
+}
+
+/**
  * A single label/value row. Renders nothing when the value is blank, unless a
  * `fallback` is supplied (used in the Ownership section, where a blank field
  * is itself informative rather than something to hide).
@@ -59,9 +88,13 @@ function DetailRow({ label, value, fallback }) {
  * @param {object | null} [props.node] - Selected node data (id, label, type,
  *   businessDomain, businessCriticality, lifecycleStatus, lifecycleStartDate,
  *   lifecycleEndDate, hosting, vendorType, costCenter, description,
- *   hasOwnershipRecord, applicationOwner, ownerEmployeeId, systemCustodian,
- *   businessOwner, supportGroup, department, classification, sensitive,
- *   connections, ...).
+ *   hasOwnershipRecord, applicationOwner, ownerEmployeeId (the Application
+ *   record's own claim), ownershipEmployeeId (the ApplicationOwnership
+ *   record's own claim), systemCustodian, businessOwner, supportGroup,
+ *   department, declaredGaps ({gapType, description, severity}[], from
+ *   KnownDataQualityGaps), classification, sensitive, connections,
+ *   connectionsDetail ({id, label, type, edgeTypes, direction, otherId,
+ *   otherLabel, ...}[], application nodes only), ...).
  * @param {string} [props.issueClasses] - Space-separated issue classes for the
  *   selected node (e.g. "gap eol"), used to render badges.
  * @param {Array<object>} [props.findings] - The full findings list (from
@@ -118,14 +151,40 @@ function NodeDetail({ node, issueClasses = '', findings = [], hideTitle = false 
       <DetailRow label="Vendor Type" value={humanizeEnum(node.vendorType)} />
       <DetailRow label="Cost Center" value={node.costCenter} />
       <DetailRow label="Description" value={node.description} />
-      <DetailRow
-        label="Connections"
-        value={
-          typeof node.connections === 'number'
-            ? `${node.connections} (blast radius)`
-            : undefined
-        }
-      />
+
+      {node.type === 'application' ? (
+        <div className="node-detail-section">
+          <div className="node-detail-subtitle">
+            Connections{typeof node.connections === 'number' ? ` (${node.connections})` : ''}
+          </div>
+          {!node.connectionsDetail || node.connectionsDetail.length === 0 ? (
+            <div className="node-detail-empty-note">No connections</div>
+          ) : (
+            <ul className="node-detail-connections">
+              {node.connectionsDetail.map((conn) => (
+                <li key={conn.id ?? `${conn.otherId}-${conn.direction}`} className="node-detail-connection">
+                  <span className="node-detail-connection-main">
+                    {conn.direction === 'outgoing' ? '→' : '←'} {conn.otherLabel ?? conn.otherId}
+                  </span>
+                  <span className="node-detail-connection-meta">
+                    {connectionKindLabel(conn)}
+                    {connectionSummary(conn) ? ` · ${connectionSummary(conn)}` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : (
+        <DetailRow
+          label="Connections"
+          value={
+            typeof node.connections === 'number'
+              ? `${node.connections} (blast radius)`
+              : undefined
+          }
+        />
+      )}
 
       {node.type === 'application' && (
         <div className="node-detail-section">
@@ -135,13 +194,26 @@ function NodeDetail({ node, issueClasses = '', findings = [], hideTitle = false 
           ) : (
             <>
               <DetailRow label="Owner" value={node.applicationOwner} fallback="Not assigned" />
-              <DetailRow label="Employee ID" value={node.ownerEmployeeId} fallback="Not assigned" />
+              <DetailRow label="Employee ID" value={node.ownershipEmployeeId} fallback="Not assigned" />
               <DetailRow label="System Custodian" value={node.systemCustodian} fallback="Not assigned" />
               <DetailRow label="Business Owner" value={node.businessOwner} fallback="Not assigned" />
               <DetailRow label="Support Group" value={node.supportGroup} fallback="Not assigned" />
               <DetailRow label="Department" value={node.department} fallback="Not assigned" />
             </>
           )}
+        </div>
+      )}
+
+      {node.type === 'application' && node.declaredGaps?.length > 0 && (
+        <div className="node-detail-section">
+          <div className="node-detail-subtitle">Known Data-Quality Gaps</div>
+          {node.declaredGaps.map((gap, index) => (
+            <p key={index} className="node-detail-trace">
+              <strong>{gap.gapType ?? 'Gap'}</strong>
+              {gap.severity ? ` (${humanizeEnum(gap.severity)})` : ''}
+              {gap.description ? ` — ${gap.description}` : ''}
+            </p>
+          ))}
         </div>
       )}
 

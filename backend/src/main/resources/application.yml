@@ -116,6 +116,15 @@ ea:
       informationObject: [informationObject, classification]
       dataQualityGap: [gapType]
 
+    # Entities that can share one physical table. When a table is recognized by
+    # its headers (not by a configured name) as the left-hand entity, each listed
+    # companion is bound from the same rows too — but only if the headers also
+    # clear min-confidence for it. A process-to-application mapping table carries
+    # both the mapping rows and the processes themselves.
+    companion-entities:
+      processMapping: [businessProcess]
+      businessProcess: [processMapping]
+
     # Accepted source-column aliases per entity/model field. Matching is
     # normalized (case/space/underscore/camelCase-insensitive), so these seed
     # the resolver for CSV/JSON equivalents and arbitrary EA-like files alike,

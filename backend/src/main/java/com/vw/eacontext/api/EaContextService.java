@@ -85,7 +85,7 @@ public class EaContextService {
         return switch (frame) {
             case APPLICATION -> projectionService.applicationView(store.getModel(), store.getGraph());
             case PROCESS -> projectionService.businessProcessView(store.getModel());
-            case DOMAIN -> projectionService.domainView(store.getModel(), store.getGraph());
+            case DOMAIN -> projectionService.domainView(store.getModel());
             case INFO_FLOW -> projectionService.informationFlowView(store.getModel());
         };
     }
@@ -111,8 +111,15 @@ public class EaContextService {
             // Service domain application ecosystem"), so scope the application
             // frame instead, seeded by every app in that domain.
             GraphDto appView = projectionService.applicationView(store.getModel(), store.getGraph());
-            return graphScopeService.scopeByAttribute(
-                    appView, node -> anchor.equals(node.data().get("businessDomain")), hops);
+            // The domain frame's "Unassigned" node stands for every real
+            // application with a blank domain — not for ghost placeholders.
+            boolean unassigned = GraphProjectionService.UNASSIGNED_DOMAIN.equals(anchor);
+            return graphScopeService.scopeByAttribute(appView, node -> {
+                Object domain = node.data().get("businessDomain");
+                return unassigned
+                        ? "application".equals(node.type()) && (domain == null || domain.toString().isBlank())
+                        : anchor.equals(domain);
+            }, hops);
         }
         return graphScopeService.scope(graph(frame), anchor, hops);
     }

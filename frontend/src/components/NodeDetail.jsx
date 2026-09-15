@@ -12,7 +12,7 @@ const BADGES = {
   eol: { label: 'Lifecycle risk', className: 'badge--eol' },
   spof: { label: 'Single point of failure', className: 'badge--spof' },
   circular: { label: 'Circular dependency', className: 'badge--circular' },
-  'orphan-interface': { label: 'Dangling interface consumer', className: 'badge--orphan-interface' },
+  'orphan-interface': { label: 'Dangling interface', className: 'badge--orphan-interface' },
   unmapped: { label: 'Unmapped process application', className: 'badge--unmapped' },
   'broken-ref': { label: 'Broken reference', className: 'badge--broken-ref' },
   duplicate: { label: 'Duplicate application record', className: 'badge--duplicate' },
@@ -35,32 +35,46 @@ function humanizeEnum(value) {
 }
 
 /**
- * A connection's kind, from the backend-provided `edgeTypes` category
- * (`DEPENDENCY` | `INTERFACE` | `FLOW`) rather than the raw `type` field,
- * which for a dependency edge is the specific `RelationshipType` name (e.g.
- * `DEPENDS_ON`) and varies per row.
+ * A connection's kind. Application-frame edges carry a backend-provided
+ * `edgeTypes` category (`DEPENDENCY` | `INTERFACE` | `FLOW`) — used instead of
+ * `type`, which for a dependency edge is the specific `RelationshipType` name
+ * and varies per row. Other frames' edges (an application node also appears in
+ * the process and information-flow frames) are identified by `type` alone.
  */
+function connectionKind(conn) {
+  return conn.edgeTypes?.[0] ?? conn.type
+}
+
 function connectionKindLabel(conn) {
-  const kind = conn.edgeTypes?.[0]
-  if (kind === 'INTERFACE') return 'Interface'
-  if (kind === 'FLOW') return 'Information flow'
-  if (kind === 'DEPENDENCY') return humanizeEnum(conn.type) || 'Dependency'
-  return conn.type ?? 'Connection'
+  switch (connectionKind(conn)) {
+    case 'INTERFACE': return 'Interface'
+    case 'FLOW': return 'Information flow'
+    case 'DEPENDENCY': return humanizeEnum(conn.type) || 'Dependency'
+    case 'processMapping': return 'Supports process'
+    case 'produces': return 'Produces'
+    case 'consumes': return 'Consumes'
+    default: return conn.type ?? 'Connection'
+  }
 }
 
 /** One line of the connection's most relevant business metadata, by kind. */
 function connectionSummary(conn) {
-  const kind = conn.edgeTypes?.[0]
-  if (kind === 'DEPENDENCY') {
-    return conn.dependencyCriticality ? `${humanizeEnum(conn.dependencyCriticality)} criticality` : null
+  switch (connectionKind(conn)) {
+    case 'DEPENDENCY':
+      return conn.dependencyCriticality ? `${humanizeEnum(conn.dependencyCriticality)} criticality` : null
+    case 'INTERFACE':
+      return conn.protocols?.[0] ?? null
+    case 'FLOW':
+      return conn.classifications?.[0] ? humanizeEnum(conn.classifications[0]) : null
+    case 'processMapping':
+      return [humanizeEnum(conn.roleOfApplication), humanizeEnum(conn.processCriticality)]
+        .filter(Boolean).join(' · ') || null
+    case 'produces':
+    case 'consumes':
+      return [conn.flowId, humanizeEnum(conn.operation)].filter(Boolean).join(' · ') || null
+    default:
+      return null
   }
-  if (kind === 'INTERFACE') {
-    return conn.protocols?.[0] ?? null
-  }
-  if (kind === 'FLOW') {
-    return conn.classifications?.[0] ? humanizeEnum(conn.classifications[0]) : null
-  }
-  return null
 }
 
 /**
@@ -263,8 +277,8 @@ function NodeDetail({ node, issueClasses = '', findings = [], hideTitle = false 
           {simulation && (
             <>
               <p className="node-detail-trace">
-                Would directly affect {simulation.upstream.length} upstream and{' '}
-                {simulation.downstream.length} downstream application(s).
+                {simulation.downstream.length} application(s) depend on this one, directly or
+                indirectly (downstream); it relies on {simulation.upstream.length} (upstream).
               </p>
 
               {simulation.newFindings.length > 0 && (

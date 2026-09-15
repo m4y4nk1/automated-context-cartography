@@ -217,20 +217,41 @@ class GraphProjectionServiceTest {
 
         assertThat(dto.frame()).isEqualTo("domain");
         // 5 distinct business domains across the 12 applications, plus a
-        // placeholder for the ghost APP-9001 that REL-011 (APP-CRM -> APP-9001)
-        // references — domain counts themselves stay unaffected by the ghost.
+        // placeholder for the ghost APP-9001 — domain counts themselves stay
+        // unaffected by the ghost.
         assertThat(dto.nodes().stream().filter(n -> "domain".equals(n.type()))).hasSize(5);
         assertThat(dto.nodes().stream().filter(n -> "applicationGhost".equals(n.type()))).hasSize(1);
         assertThat(node(dto, "Sales & Ordering").data().get("applicationCount")).isEqualTo(3);
-
-        // Finance (Billing/Legacy) -> Sales & Ordering (OMS) collapses to one weighted edge.
-        assertThat(dto.edges())
-                .anyMatch(e -> "Finance".equals(e.source()) && "Sales & Ordering".equals(e.target()));
         assertThat(dto.edges()).allMatch(e -> e.data().containsKey("relationshipCount"));
 
-        // Sales & Ordering (APP-CRM) -> the ghost, instead of the edge silently vanishing.
+        // APP-BILL and APP-LEGACY (Finance) depend on APP-OMS (Sales & Ordering),
+        // and OMS provides IF-001 to BILL. Drawn provider -> dependent, like the
+        // application frame, so the arrow lands on the dependent domain.
+        GraphEdge salesToFinance = dto.edges().stream()
+                .filter(e -> "Sales & Ordering".equals(e.source()) && "Finance".equals(e.target()))
+                .findFirst().orElseThrow();
+        assertThat(salesToFinance.data())
+                .containsEntry("relationshipCount", 2)
+                .containsEntry("interfaceCount", 1)
+                .containsEntry("flowCount", 0);
+        assertThat(salesToFinance.label()).isEqualTo("2 relationships · 1 interface");
+
+        // A coupling that exists only as an interface and a flow — no relationship
+        // at all — still reaches the domain frame instead of being invisible there.
+        GraphEdge financeToSales = dto.edges().stream()
+                .filter(e -> "Finance".equals(e.source()) && "Sales & Ordering".equals(e.target()))
+                .findFirst().orElseThrow();
+        assertThat(financeToSales.data())
+                .containsEntry("relationshipCount", 0)
+                .containsEntry("interfaceCount", 1)
+                .containsEntry("flowCount", 1);
+
+        // Ghost endpoints stay on the diagram: APP-CRM depends on the ghost APP-9001
+        // (REL-011), and APP-MDM provides IF-003 to it.
         assertThat(dto.edges())
-                .anyMatch(e -> "Sales & Ordering".equals(e.source()) && "APP-9001".equals(e.target()));
+                .anyMatch(e -> "APP-9001".equals(e.source()) && "Sales & Ordering".equals(e.target()));
+        assertThat(dto.edges())
+                .anyMatch(e -> "Data & Analytics".equals(e.source()) && "APP-9001".equals(e.target()));
     }
 
     /**
@@ -252,8 +273,9 @@ class GraphProjectionServiceTest {
         GraphDto dto = projectionService.domainView(handBuilt);
 
         assertThat(dto.nodes()).anyMatch(n -> "APP-9099".equals(n.id()) && "applicationGhost".equals(n.type()));
-        // Ghost (source) -> the target application's domain, not silently dropped.
-        assertThat(dto.edges()).anyMatch(e -> "APP-9099".equals(e.source()) && "Sales".equals(e.target()));
+        // The unresolved APP-9099 depends on APP-A (Sales). Drawn provider ->
+        // dependent, so Sales -> the ghost — not silently dropped.
+        assertThat(dto.edges()).anyMatch(e -> "Sales".equals(e.source()) && "APP-9099".equals(e.target()));
     }
 
     @Test

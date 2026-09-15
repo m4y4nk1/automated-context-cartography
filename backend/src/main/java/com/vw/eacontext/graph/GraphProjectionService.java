@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.jgrapht.Graph;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,14 @@ import lombok.extern.slf4j.Slf4j;
  *   <li>{@link #businessProcessView(CanonicalModel)} — processes and the
  *       applications that support them, via {@link ProcessMapping}.</li>
  *   <li>{@link #domainView(CanonicalModel)} — applications aggregated by
- *       {@link Application#businessDomain()}, with cross-domain relationships
- *       collapsed into domain &rarr; domain edges.</li>
+ *       {@link Application#businessDomain()}, with every cross-domain
+ *       relationship, interface and flow collapsed into domain &rarr; domain edges.</li>
  *   <li>{@link #informationFlowView(CanonicalModel)} — information objects as
  *       intermediary nodes: source &rarr; object (produces) &rarr; target (consumes).</li>
  * </ul>
+ *
+ * <p>Every frame draws its edges from the providing/originating side to the
+ * dependent/consuming side, so an arrowhead means the same thing in all four.</p>
  *
  * <p>Application ids that records reference but which have no application row of
  * their own are rendered as placeholder nodes ({@code applicationGhost}) in every
@@ -57,19 +61,21 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class GraphProjectionService {
 
+    /** Domain-frame node id standing for every application with a blank business domain. */
+    public static final String UNASSIGNED_DOMAIN = "__UNASSIGNED__";
+
     private static final String TYPE_APPLICATION = "application";
     private static final String TYPE_APPLICATION_GHOST = "applicationGhost";
     private static final String TYPE_DOMAIN = "domain";
     private static final String TYPE_PROCESS = "process";
     private static final String TYPE_PROCESS_GHOST = "processGhost";
     private static final String TYPE_INFORMATION_OBJECT = "informationObject";
-    private static final String UNASSIGNED_DOMAIN = "__UNASSIGNED__";
 
     private final GraphBuilderService graphBuilderService;
     private final GhostReferenceResolver ghostReferenceResolver;
     private final ApplicationEdgeAssembler applicationEdgeAssembler;
 
-    /** Application frame: applications as nodes, relationships as directed edges. */
+    /** Application frame: applications as nodes; relationships, interfaces and flows as edges. */
     public GraphDto applicationView(CanonicalModel model) {
         return applicationView(model, graphBuilderService.build(model));
     }
@@ -80,9 +86,9 @@ public class GraphProjectionService {
      * <p>The supplied graph provides the application vertices; its edges are
      * deliberately <em>not</em> used. Relationships alone describe only part of
      * the landscape, so edges come from {@link ApplicationEdgeAssembler}, which
-     * merges relationships, interfaces and information flows into one bundled
-     * edge per connected pair. The analytical graph stays relationship-only so
-     * hub, cycle and impact results are unaffected.</p>
+     * turns every relationship, interface and information flow into its own
+     * edge. The analytical graph stays relationship-only so hub, cycle and
+     * impact results are unaffected.</p>
      */
     public GraphDto applicationView(CanonicalModel model, Graph<Application, RelationshipEdge> graph) {
         Map<String, ApplicationOwnership> ownershipByAppId = indexOwnership(model);
@@ -178,7 +184,8 @@ public class GraphProjectionService {
                     mapping.id() == null ? processId + "->" + appId : mapping.id(),
                     processId,
                     appId,
-                    mapping.roleOfApplication() == null ? "supports" : mapping.roleOfApplication().name(),
+                    mapping.roleOfApplication() == null
+                            ? "supports" : mapping.roleOfApplication().name().toLowerCase(Locale.ROOT),
                     "processMapping",
                     data));
         }
@@ -188,31 +195,25 @@ public class GraphProjectionService {
     }
 
     /**
-     * Domain frame: apps aggregated by business domain; cross-domain edges
-     * collapsed. Unresolved (ghost) relationship targets get their own
-     * placeholder node — see {@link #domainView(CanonicalModel, Graph)}.
+     * Domain frame: applications aggregated by business domain, with every
+     * cross-domain coupling — relationship, interface <em>and</em> information
+     * flow — collapsed into one weighted edge per ordered pair of domains.
+     *
+     * <p>Counting relationships alone would hide couplings that only exist as an
+     * interface or a flow, the same reason the application frame draws all three
+     * (see {@link ApplicationEdgeAssembler}). Edges also follow that frame's
+     * direction convention — from the providing/originating side to the
+     * dependent/consuming side — so a relationship (recorded dependent &rarr;
+     * provider) is flipped, while interfaces and flows are taken as recorded.</p>
+     *
+     * <p>Records are read straight off the model rather than the analytical
+     * graph, which drops any relationship with an unresolved endpoint. An
+     * unresolved (ghost) endpoint gets its own {@code applicationGhost} node; it
+     * is never counted into a domain's {@code applicationCount}, nor folded into
+     * {@link #UNASSIGNED_DOMAIN}, which means "a real application with a blank
+     * domain field" — not "an id that doesn't resolve to any application."</p>
      */
     public GraphDto domainView(CanonicalModel model) {
-        return domainView(model, graphBuilderService.build(model));
-    }
-
-    /**
-     * Domain frame reusing a pre-built graph.
-     *
-     * <p>Unlike the other three frames, this one can't reuse
-     * {@link GhostReferenceResolver} against {@code graph.edgeSet()} for its
-     * ghost handling — {@link GraphBuilderService} skips any relationship whose
-     * target doesn't resolve, so a ghost-referencing edge is never in the
-     * analytical graph at all. Those rows are read directly off
-     * {@link CanonicalModel#relationships()} instead, purely for this purpose.</p>
-     *
-     * <p>A ghost is never counted into a domain's {@code applicationCount}, and
-     * never folded into the {@link #UNASSIGNED_DOMAIN} bucket — that sentinel
-     * means "a real application with a blank domain field," a different concept
-     * from "this id doesn't resolve to an application at all." It gets its own
-     * {@code applicationGhost} node instead, matching the other three frames.</p>
-     */
-    public GraphDto domainView(CanonicalModel model, Graph<Application, RelationshipEdge> graph) {
         Map<String, Integer> appCountByDomain = new LinkedHashMap<>();
         Map<String, String> domainKeyByAppId = new HashMap<>();
         for (Application app : model.applications()) {
@@ -232,65 +233,108 @@ public class GraphProjectionService {
             nodes.add(new GraphNode(domainKey, name + " (" + count + ")", TYPE_DOMAIN, data));
         });
 
-        // Collapse cross-domain relationships into weighted domain -> domain edges.
-        Map<String, Integer> edgeWeights = new LinkedHashMap<>();
-        for (RelationshipEdge edge : graph.edgeSet()) {
-            String from = domainKeyByAppId.get(graph.getEdgeSource(edge).id());
-            String to = domainKeyByAppId.get(graph.getEdgeTarget(edge).id());
-            if (from == null || to == null || from.equals(to)) {
-                continue; // ignore intra-domain relationships
-            }
-            edgeWeights.merge(from + ">" + to, 1, Integer::sum);
+        GhostReferences ghosts = ghostReferenceResolver.resolve(model);
+        Map<String, DomainCoupling> couplings = new LinkedHashMap<>();
+        for (Relationship relationship : model.relationships()) {
+            couple(couplings, domainKeyByAppId, ghosts, relationship.targetApplicationId(),
+                    relationship.sourceApplicationId(), DomainCoupling::addRelationship);
+        }
+        for (Interface iface : model.interfaces()) {
+            couple(couplings, domainKeyByAppId, ghosts, iface.providerApplicationId(),
+                    iface.consumerApplicationId(), DomainCoupling::addInterface);
+        }
+        for (InformationObject info : model.informationObjects()) {
+            couple(couplings, domainKeyByAppId, ghosts, info.sourceApplicationId(),
+                    info.targetApplicationId(), DomainCoupling::addFlow);
         }
 
-        List<GraphEdge> edges = new ArrayList<>();
-        edgeWeights.forEach((key, weight) -> {
-            String[] parts = key.split(">", 2);
-            Map<String, Object> data = GraphNode.attrs();
-            data.put("relationshipCount", weight);
-            edges.add(new GraphEdge(
-                    "DOM_" + key, parts[0], parts[1], weight + " relationship(s)", "domainFlow", data));
-        });
-
-        // Ghost endpoints: read the raw Relationships rows directly (see javadoc
-        // above for why graph.edgeSet() can't be used here), group by
-        // (domain, ghost id), and add one placeholder node + edge per ghost
-        // actually referenced by a relationship. Checked on both sides — a
-        // relationship can just as easily reference a missing source
-        // application as a missing target.
-        GhostReferences ghosts = ghostReferenceResolver.resolve(model);
         Set<String> referencedGhostIds = new LinkedHashSet<>();
-        Map<String, Integer> ghostEdgeWeights = new LinkedHashMap<>();
-        for (Relationship relationship : model.relationships()) {
-            String source = relationship.sourceApplicationId();
-            String target = relationship.targetApplicationId();
-            if (ghosts.isGhost(target)) {
-                String sourceDomain = domainKeyByAppId.get(source);
-                if (sourceDomain != null) {
-                    referencedGhostIds.add(target);
-                    ghostEdgeWeights.merge(sourceDomain + ">" + target, 1, Integer::sum);
+        List<GraphEdge> edges = new ArrayList<>();
+        for (DomainCoupling coupling : couplings.values()) {
+            for (String endpoint : List.of(coupling.from, coupling.to)) {
+                if (ghosts.isGhost(endpoint)) {
+                    referencedGhostIds.add(endpoint);
                 }
             }
-            if (ghosts.isGhost(source)) {
-                String targetDomain = domainKeyByAppId.get(target);
-                if (targetDomain != null) {
-                    referencedGhostIds.add(source);
-                    ghostEdgeWeights.merge(source + ">" + targetDomain, 1, Integer::sum);
-                }
-            }
+            Map<String, Object> data = GraphNode.attrs();
+            data.put("relationshipCount", coupling.relationships);
+            data.put("interfaceCount", coupling.interfaces);
+            data.put("flowCount", coupling.flows);
+            data.put("couplingCount", coupling.relationships + coupling.interfaces + coupling.flows);
+            edges.add(new GraphEdge("DOM_" + coupling.from + ">" + coupling.to,
+                    coupling.from, coupling.to, coupling.label(), "domainFlow", data));
         }
         for (String ghostId : referencedGhostIds) {
             nodes.add(ghostNode(ghostId, ghosts));
         }
-        ghostEdgeWeights.forEach((key, weight) -> {
-            String[] parts = key.split(">", 2);
-            Map<String, Object> data = GraphNode.attrs();
-            data.put("relationshipCount", weight);
-            edges.add(new GraphEdge(
-                    "DOM_GHOST_" + key, parts[0], parts[1], weight + " relationship(s)", "domainFlow", data));
-        });
-
         return new GraphDto(TYPE_DOMAIN, nodes, edges);
+    }
+
+    /**
+     * Counts one record's coupling between the domains of its two endpoints.
+     * Skipped when the pair is intra-domain, when an endpoint neither belongs
+     * to a domain nor is a ghost (e.g. blank), or when both ends are ghosts —
+     * there's no domain on either side to attach it to.
+     */
+    private static void couple(Map<String, DomainCoupling> couplings, Map<String, String> domainKeyByAppId,
+                               GhostReferences ghosts, String fromAppId, String toAppId,
+                               Consumer<DomainCoupling> count) {
+        String from = domainOrGhost(fromAppId, domainKeyByAppId, ghosts);
+        String to = domainOrGhost(toAppId, domainKeyByAppId, ghosts);
+        if (from == null || to == null || from.equals(to)
+                || (ghosts.isGhost(fromAppId) && ghosts.isGhost(toAppId))) {
+            return;
+        }
+        count.accept(couplings.computeIfAbsent(from + ">" + to, key -> new DomainCoupling(from, to)));
+    }
+
+    private static String domainOrGhost(String appId, Map<String, String> domainKeyByAppId, GhostReferences ghosts) {
+        String domain = domainKeyByAppId.get(appId);
+        if (domain != null) {
+            return domain;
+        }
+        return ghosts.isGhost(appId) ? appId : null;
+    }
+
+    /** Relationship / interface / flow counts for one ordered pair of domain-frame endpoints. */
+    private static final class DomainCoupling {
+        private final String from;
+        private final String to;
+        private int relationships;
+        private int interfaces;
+        private int flows;
+
+        private DomainCoupling(String from, String to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        private void addRelationship() {
+            relationships++;
+        }
+
+        private void addInterface() {
+            interfaces++;
+        }
+
+        private void addFlow() {
+            flows++;
+        }
+
+        /** e.g. {@code "2 relationships · 1 interface"} — zero counts are left out. */
+        private String label() {
+            List<String> parts = new ArrayList<>();
+            if (relationships > 0) {
+                parts.add(relationships + (relationships == 1 ? " relationship" : " relationships"));
+            }
+            if (interfaces > 0) {
+                parts.add(interfaces + (interfaces == 1 ? " interface" : " interfaces"));
+            }
+            if (flows > 0) {
+                parts.add(flows + (flows == 1 ? " flow" : " flows"));
+            }
+            return String.join(" · ", parts);
+        }
     }
 
     /** Information-flow frame: source application -> information object -> target application. */
@@ -310,6 +354,17 @@ public class GraphProjectionService {
 
         GhostReferences ghosts = ghostReferenceResolver.resolve(model);
 
+        // One information object usually spans several flow rows. If they disagree
+        // on its classification, the node must carry the most sensitive one — not
+        // whichever row happened to come first.
+        Map<String, InformationObject> mostSensitiveByObject = new HashMap<>();
+        for (InformationObject info : model.informationObjects()) {
+            if (info.classification() != null) {
+                mostSensitiveByObject.merge(info.informationObject(), info, (kept, candidate) ->
+                        candidate.classification().compareTo(kept.classification()) > 0 ? candidate : kept);
+            }
+        }
+
         for (InformationObject info : model.informationObjects()) {
             Application source = appById.get(info.sourceApplicationId());
             Application target = appById.get(info.targetApplicationId());
@@ -328,9 +383,11 @@ public class GraphProjectionService {
 
             String ioId = "IO:" + info.informationObject();
             nodes.computeIfAbsent(ioId, id -> {
+                InformationObject mostSensitive = mostSensitiveByObject.get(info.informationObject());
+                var classification = mostSensitive == null ? null : mostSensitive.classification();
                 Map<String, Object> data = GraphNode.attrs();
-                data.put("classification", info.classification() == null ? null : info.classification().name());
-                data.put("sensitive", info.classification() != null && info.classification().isSensitive());
+                data.put("classification", classification == null ? null : classification.name());
+                data.put("sensitive", classification != null && classification.isSensitive());
                 return new GraphNode(id, info.informationObject(), TYPE_INFORMATION_OBJECT, data);
             });
 

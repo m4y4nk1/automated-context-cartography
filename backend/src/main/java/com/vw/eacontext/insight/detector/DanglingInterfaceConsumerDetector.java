@@ -17,7 +17,10 @@ import com.vw.eacontext.model.CanonicalModel;
 import com.vw.eacontext.model.Interface;
 import com.vw.eacontext.validation.Severity;
 
-/** An {@link Interface} whose consumer application is a ghost reference. */
+/**
+ * An {@link Interface} whose provider or consumer application is a ghost
+ * reference — either end can be the broken one. One finding per record.
+ */
 @Component
 public class DanglingInterfaceConsumerDetector implements Detector {
 
@@ -26,14 +29,25 @@ public class DanglingInterfaceConsumerDetector implements Detector {
         Set<String> applicationIds = DetectorSupport.applicationIds(model);
         List<Finding> findings = new ArrayList<>();
         for (Interface iface : model.interfaces()) {
-            IngestionSupport.ReferenceCheck check =
+            IngestionSupport.ReferenceCheck provider =
+                    IngestionSupport.resolveReference(iface.providerApplicationId(), applicationIds);
+            IngestionSupport.ReferenceCheck consumer =
                     IngestionSupport.resolveReference(iface.consumerApplicationId(), applicationIds);
-            if (check.ghost()) {
-                findings.add(new Finding(FindingType.DANGLING_INTERFACE_CONSUMER, Severity.ERROR,
-                        DetectorSupport.ids(iface.id(), iface.providerApplicationId()),
-                        "Interface '" + iface.id() + "' (" + iface.name() + ") consumer '"
-                                + check.id() + "' does not exist"));
+            if (!provider.ghost() && !consumer.ghost()) {
+                continue;
             }
+            List<String> unknown = new ArrayList<>();
+            if (provider.ghost()) {
+                unknown.add("provider '" + provider.id() + "'");
+            }
+            if (consumer.ghost()) {
+                unknown.add("consumer '" + consumer.id() + "'");
+            }
+            findings.add(new Finding(FindingType.DANGLING_INTERFACE_CONSUMER, Severity.ERROR,
+                    DetectorSupport.ids(iface.id(),
+                            provider.present() ? provider.id() : null, consumer.present() ? consumer.id() : null),
+                    "Interface '" + iface.id() + "' (" + iface.name() + ") " + String.join(" and ", unknown)
+                            + (unknown.size() > 1 ? " do not exist" : " does not exist")));
         }
         return findings;
     }

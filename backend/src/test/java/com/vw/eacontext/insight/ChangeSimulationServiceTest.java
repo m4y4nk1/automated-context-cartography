@@ -59,10 +59,10 @@ class ChangeSimulationServiceTest {
         SimulatedRemovalResult result = changeSimulationService.simulateRemoval(model, graph, baselineFindings, "APP-OMS");
 
         assertThat(result.removedApplicationId()).isEqualTo("APP-OMS");
-        // upstream() is the full transitive closure (ImpactAnalysisService does a BFS, not just
-        // direct neighbors), so it's a superset of the 7 direct in-degree contributors
-        // GraphBuilderServiceTest already pins — assert that known subset, not an exact match.
-        assertThat(result.upstream()).contains(
+        // downstream() — everything depending on OMS — is the full transitive closure
+        // (ImpactAnalysisService does a BFS, not just direct neighbors), so it's a superset of
+        // the 7 direct in-degree contributors — assert that known subset, not an exact match.
+        assertThat(result.downstream()).contains(
                 "APP-CRM", "APP-PRICING", "APP-PORTAL", "APP-MDM", "APP-BILL", "APP-LEGACY", "APP-DUPLICATE-A");
 
         // The HUB finding about OMS itself disappears — the app is gone, so it can't be a hub anymore.

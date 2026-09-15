@@ -1,21 +1,36 @@
-import { useEffect, useState } from 'react'
-import { ArrowRightLeft, Cable, GitBranch, X } from 'lucide-react'
+import { useEffect } from 'react'
+import { ArrowRightLeft, Cable, GitBranch, Network, Workflow, X } from 'lucide-react'
 import { findingsForEntity } from '../services/insightAdapter'
 import './NodePopupDialog.css'
 import './NodeDetail.css'
 
-/** Icon shown in the header, by the edge's backend-provided `edgeTypes` category. */
+/**
+ * An application-frame edge carries a backend-provided `edgeTypes` category
+ * (DEPENDENCY | INTERFACE | FLOW); every other frame's edge is identified by
+ * its own `type` (processMapping, produces/consumes, domainFlow).
+ */
+function kindOf(edge) {
+  return edge.edgeTypes?.[0] ?? edge.type
+}
+
 const KIND_ICONS = {
   DEPENDENCY: GitBranch,
   INTERFACE: Cable,
   FLOW: ArrowRightLeft,
+  processMapping: Workflow,
+  produces: ArrowRightLeft,
+  consumes: ArrowRightLeft,
+  domainFlow: Network,
 }
 
-/** Human-readable type label shown as a chip in the edge title. */
 const KIND_LABELS = {
   DEPENDENCY: 'Dependency',
   INTERFACE: 'Interface',
   FLOW: 'Information Flow',
+  processMapping: 'Process Support',
+  produces: 'Information Flow',
+  consumes: 'Information Flow',
+  domainFlow: 'Domain Coupling',
 }
 
 /** Acronyms kept upper-cased rather than title-cased, matching NodeDetail's convention. */
@@ -39,60 +54,74 @@ function DetailRow({ label, value }) {
   )
 }
 
-/**
- * The type-specific rows for an edge, by its `edgeTypes` category. An edge
- * from a frame other than the application view (domain aggregate, process
- * mapping, information-object produces/consumes) has no recognized category
- * — it still gets the common From/To/Type rows above, just nothing here,
- * rather than an empty or broken dialog.
- */
+/** The type-specific rows for an edge; an unrecognized kind just gets the common From/To rows. */
 function KindDetail({ edge }) {
-  const kind = edge.edgeTypes?.[0]
-  if (kind === 'DEPENDENCY') {
-    return <DetailRow label="Dependency Criticality" value={humanizeEnum(edge.dependencyCriticality)} />
+  switch (kindOf(edge)) {
+    case 'DEPENDENCY':
+      return <DetailRow label="Dependency Criticality" value={humanizeEnum(edge.dependencyCriticality)} />
+    case 'INTERFACE':
+      return (
+        <>
+          <DetailRow label="Protocol" value={edge.protocols?.[0]} />
+          <DetailRow label="Data Format" value={edge.dataFormats?.[0]} />
+          <DetailRow label="Frequency" value={humanizeEnum(edge.frequencies?.[0])} />
+          <DetailRow label="Status" value={humanizeEnum(edge.interfaceStatuses?.[0])} />
+        </>
+      )
+    case 'FLOW':
+      return (
+        <>
+          <DetailRow label="Classification" value={humanizeEnum(edge.classifications?.[0])} />
+          <DetailRow label="Operation" value={humanizeEnum(edge.operations?.[0])} />
+        </>
+      )
+    case 'processMapping':
+      return (
+        <>
+          <DetailRow label="Role" value={humanizeEnum(edge.roleOfApplication)} />
+          <DetailRow label="Process Criticality" value={humanizeEnum(edge.processCriticality)} />
+        </>
+      )
+    case 'produces':
+    case 'consumes':
+      return (
+        <>
+          <DetailRow label="Flow" value={edge.flowId} />
+          <DetailRow label="Operation" value={humanizeEnum(edge.operation)} />
+          <DetailRow label="Interface" value={edge.interfaceId} />
+          <DetailRow label="Interface Status" value={humanizeEnum(edge.interfaceStatus)} />
+        </>
+      )
+    case 'domainFlow':
+      return (
+        <>
+          <DetailRow label="Relationships" value={edge.relationshipCount} />
+          <DetailRow label="Interfaces" value={edge.interfaceCount} />
+          <DetailRow label="Information Flows" value={edge.flowCount} />
+        </>
+      )
+    default:
+      return null
   }
-  if (kind === 'INTERFACE') {
-    return (
-      <>
-        <DetailRow label="Protocol" value={edge.protocols?.[0]} />
-        <DetailRow label="Data Format" value={edge.dataFormats?.[0]} />
-        <DetailRow label="Frequency" value={humanizeEnum(edge.frequencies?.[0])} />
-        <DetailRow label="Status" value={humanizeEnum(edge.interfaceStatuses?.[0])} />
-      </>
-    )
-  }
-  if (kind === 'FLOW') {
-    return (
-      <>
-        <DetailRow label="Classification" value={humanizeEnum(edge.classifications?.[0])} />
-        <DetailRow label="Operation" value={humanizeEnum(edge.operations?.[0])} />
-      </>
-    )
-  }
-  return null
 }
 
 /**
- * Modal dialog for a selected edge (relationship / interface / information
- * flow, or another frame's aggregate edge) — the edge-level counterpart to
- * NodePopupDialog, reusing the same visual shell (NodePopupDialog.css) since
- * the chrome (overlay, header, close button) is identical.
+ * Modal dialog for a selected edge in any frame — the edge-level counterpart
+ * to NodePopupDialog, reusing the same visual shell (NodePopupDialog.css)
+ * since the chrome (overlay, header, close button) is identical.
  *
  * @param {object} props
  * @param {boolean} props.open - Whether the dialog is visible.
  * @param {object | null} props.edge - Selected edge data (id, source, target,
- *   label, type, edgeTypes, sourceLabel, targetLabel, plus type-specific
- *   fields), as emitted by GraphCanvas' onEdgeSelect.
+ *   label, type, sourceLabel, targetLabel, plus type-specific fields), as
+ *   emitted by GraphCanvas' onEdgeSelect.
  * @param {Array<object>} [props.findings] - Full findings list, used to show
  *   this edge's underlying source-record detail (same traceability as node popups).
  * @param {() => void} props.onClose - Called to dismiss the dialog.
  */
 function EdgePopupDialog({ open, edge, findings = [], onClose }) {
-  const [closing, setClosing] = useState(false)
-
   useEffect(() => {
     if (!open) return undefined
-    setClosing(false)
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') onClose?.()
     }
@@ -102,20 +131,18 @@ function EdgePopupDialog({ open, edge, findings = [], onClose }) {
 
   if (!open || !edge) return null
 
-  const kind = edge.edgeTypes?.[0]
+  const kind = kindOf(edge)
   const Icon = KIND_ICONS[kind] ?? GitBranch
   const typeLabel = KIND_LABELS[kind] ?? humanizeEnum(edge.type) ?? 'Connection'
-  const edgeFindings = findingsForEntity(findings, edge.id)
-
-  const handleOverlayClick = () => onClose?.()
+  // An information-flow frame edge's own id is "<flowId>:produces" / ":consumes";
+  // findings name the underlying flow record, so trace by that instead.
+  const recordId = edge.flowId ?? edge.id
+  const edgeFindings = findingsForEntity(findings, recordId)
 
   return (
-    <div
-      className={`node-popup-overlay${closing ? ' is-closing' : ''}`}
-      onClick={handleOverlayClick}
-    >
+    <div className="node-popup-overlay" onClick={() => onClose?.()}>
       <div
-        className={`node-popup-dialog${closing ? ' is-closing' : ''}`}
+        className="node-popup-dialog"
         role="dialog"
         aria-modal="true"
         aria-label={`Details for ${edge.label ?? edge.id}`}

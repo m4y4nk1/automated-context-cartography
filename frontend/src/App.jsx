@@ -17,6 +17,7 @@ import { useFilterOptions } from './hooks/useFilterOptions'
 import { useGapComparison } from './hooks/useGapComparison'
 import { useInsights } from './hooks/useInsights'
 import { useSummary } from './hooks/useSummary'
+import { findFrameContaining } from './services/frameLocator'
 import { nodeClassesFromFindings } from './services/insightAdapter'
 import { fitReadable } from './services/graphViewport'
 import { EMPTY_FILTERS, toServerFilters } from './services/filterState'
@@ -27,45 +28,6 @@ const FRAME_LABELS = {
   domain: 'Domain',
   process: 'Process',
   infoflow: 'Information Flow',
-}
-
-/**
- * Which frame(s) a given entity id could plausibly appear in, by its stable
- * id prefix (APP-/BP-/BPM-/FLOW-/IF-, per the dataset's own surrogate-id
- * convention). "application" is the only guaranteed one — GraphBuilderService
- * adds every valid Application as a vertex unconditionally, regardless of
- * whether it has any relationships/interfaces/flows/process mappings — the
- * others are good-but-not-certain heuristics, same standard this toast has
- * always used. The "domain" frame is never returned: no finding type's
- * relatedEntityIds ever names a domain (domain nodes are synthetic
- * aggregates), so it's never a useful place to send someone.
- */
-function framesSupporting(id) {
-  if (id.startsWith('APP-')) return ['application', 'process', 'infoflow']
-  if (id.startsWith('BP-') || id.startsWith('BPM-')) return ['process']
-  if (id.startsWith('FLOW-') || id.startsWith('IF-')) return ['infoflow']
-  return []
-}
-
-/**
- * For a "nothing to highlight in the current frame" miss, the best other
- * frame to suggest — works symmetrically from any current frame (including
- * Domain, which never resolves any entity id) to any target frame. Returns
- * null when nothing else would help either (a true ghost reference).
- */
-function bestFrameSuggestion(type, findings, currentFrame) {
-  const candidates = new Set()
-  for (const finding of findings) {
-    if (finding?.type !== type) continue
-    for (const id of finding.relatedEntityIds ?? []) {
-      for (const frameName of framesSupporting(id)) candidates.add(frameName)
-    }
-  }
-  candidates.delete(currentFrame)
-  for (const preferred of ['application', 'process', 'infoflow']) {
-    if (candidates.has(preferred)) return preferred
-  }
-  return null
 }
 
 function uploadToast(report) {
@@ -134,6 +96,9 @@ function Workspace({ initialReport }) {
   const anchorOptions = useMemo(() => {
     const nodeOptions = fullElements
       .filter((el) => !(el.data.source && el.data.target)) // nodes only, no edges
+      // A domain anchor is matched against applications' business domain, so a
+      // ghost placeholder in the domain frame has nothing to scope to (404).
+      .filter((el) => frame !== 'domain' || el.data.type === 'domain')
       .map((el) => ({ value: el.data.id, label: el.data.label ?? el.data.id }))
     const interfaceOptions = frame === 'application'
       ? fullElements
@@ -334,11 +299,15 @@ function Workspace({ initialReport }) {
               filters={filters}
               onNodeSelect={handleNodeSelect}
               onEdgeSelect={handleEdgeSelect}
-              onFocusMiss={() => {
-                // Unresolvable references now render as placeholder nodes in
-                // whichever frame declares them, so a miss is almost always a
-                // wrong-frame miss rather than a genuinely unshowable record.
-                const suggestion = bestFrameSuggestion(activeIssueType, findings, frame)
+              onFocusMiss={async () => {
+                // Unresolvable references render as placeholder nodes in whichever
+                // frame declares them, so a miss is almost always a wrong-frame miss.
+                // Which frame to suggest is read from the frames' data, not guessed
+                // from the dataset's id naming convention.
+                const ids = findings
+                  .filter((finding) => finding?.type === activeIssueType)
+                  .flatMap((finding) => finding.relatedEntityIds ?? [])
+                const suggestion = await findFrameContaining(ids, frame)
                 setToast({
                   variant: 'warning',
                   message: suggestion

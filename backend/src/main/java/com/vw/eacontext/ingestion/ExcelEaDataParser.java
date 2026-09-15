@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -145,28 +147,9 @@ public class ExcelEaDataParser implements EaDataParser {
                         .map(IngestionSupport.TableBinding::entity).toList(), rows);
     }
 
-    /**
-     * Resolves every entity type a sheet should be read as: entities explicitly
-     * named to this sheet in configuration (a mapping sheet may name more than
-     * one), otherwise the single best heuristic match.
-     */
+    /** Every entity type a sheet should be read as — see {@link IngestionSupport#resolveBindings}. */
     private List<IngestionSupport.TableBinding> resolveBindings(String sheetName, List<String> headerNames) {
-        List<String> explicit = IngestionSupport.entitiesByTableName(properties, sheetName);
-        List<IngestionSupport.TableBinding> bindings = new ArrayList<>();
-        if (!explicit.isEmpty()) {
-            for (String entity : explicit) {
-                IngestionSupport.TableBinding binding = IngestionSupport.bindEntity(properties, entity, headerNames);
-                if (binding != null) {
-                    bindings.add(binding);
-                }
-            }
-        } else {
-            IngestionSupport.TableBinding binding = IngestionSupport.bind(properties, sheetName, headerNames);
-            if (binding != null) {
-                bindings.add(binding);
-            }
-        }
-        return bindings;
+        return IngestionSupport.resolveBindings(properties, sheetName, headerNames);
     }
 
     /**
@@ -220,8 +203,30 @@ public class ExcelEaDataParser implements EaDataParser {
         return true;
     }
 
+    /**
+     * A cell's value as text. A date cell is read as an ISO date rather than
+     * through its display format ("1/15/26", "15-Jan", locale-dependent), so
+     * parsing never depends on how a workbook happens to be formatted; a formula
+     * cell yields its cached result rather than the formula source.
+     */
     private String cellText(Cell cell) {
-        return cell == null ? null : dataFormatter.formatCellValue(cell);
+        if (cell == null) {
+            return null;
+        }
+        CellType type = cell.getCellType() == CellType.FORMULA ? cell.getCachedFormulaResultType() : cell.getCellType();
+        if (type == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+            return cell.getLocalDateTimeCellValue().toLocalDate().toString();
+        }
+        if (cell.getCellType() == CellType.FORMULA) {
+            return switch (type) {
+                case STRING -> cell.getStringCellValue();
+                case NUMERIC -> dataFormatter.formatRawCellContents(cell.getNumericCellValue(),
+                        cell.getCellStyle().getDataFormat(), cell.getCellStyle().getDataFormatString());
+                case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+                default -> null;
+            };
+        }
+        return dataFormatter.formatCellValue(cell);
     }
 
     /**

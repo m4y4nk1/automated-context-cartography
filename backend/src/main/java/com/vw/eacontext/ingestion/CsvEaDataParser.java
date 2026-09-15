@@ -128,10 +128,7 @@ public class CsvEaDataParser implements EaDataParser {
                     }
                 }
             } else {
-                IngestionSupport.TableBinding binding = IngestionSupport.bind(properties, tableName, headers);
-                if (binding != null) {
-                    bindings.add(binding);
-                }
+                bindings.addAll(IngestionSupport.resolveBindings(properties, tableName, headers));
             }
 
             if (bindings.isEmpty()) {

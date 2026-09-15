@@ -47,15 +47,15 @@ const ISSUE_CARDS = [
   {
     type: 'BROKEN_RELATIONSHIP_REFERENCE',
     label: 'Broken relationships',
-    detail: 'Relationships targeting an application that does not exist',
+    detail: 'Relationships whose source or target application does not exist',
     icon: Unlink,
     tone: 'coral',
     severity: 'ERROR',
   },
   {
     type: 'DANGLING_INTERFACE_CONSUMER',
-    label: 'Dangling interface consumers',
-    detail: 'Interfaces whose consumer application does not exist',
+    label: 'Dangling interfaces',
+    detail: 'Interfaces whose provider or consumer application does not exist',
     icon: Unplug,
     tone: 'coral',
     severity: 'ERROR',

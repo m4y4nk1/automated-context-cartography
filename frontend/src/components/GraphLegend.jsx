@@ -17,7 +17,7 @@ const RING_ITEMS = [
   { cls: 'broken-ref', color: '#dc2626', style: 'solid', label: 'Broken reference' },
   { cls: 'unmapped', color: '#94a3b8', style: 'dotted', label: 'Unmapped process application' },
   { cls: 'circular', color: '#7c3aed', style: 'double', label: 'Circular dependency' },
-  { cls: 'orphan-interface', color: '#68767e', style: 'dotted', label: 'Dangling interface consumer' },
+  { cls: 'orphan-interface', color: '#68767e', style: 'dotted', label: 'Dangling interface' },
   { cls: 'deprecated-interface', color: '#8b5cf6', style: 'dotted', label: 'Deprecated interface in use' },
   { cls: 'spof', color: '#2563a6', style: 'dashed', label: 'Hub / single point of failure' },
   { cls: 'sensitive-flow', color: '#be123c', style: 'double', label: 'Sensitive data risk' },
@@ -92,6 +92,20 @@ function GraphLegend({ frame }) {
                 <span>
                   The arrowhead always points at the dependent/consuming application, the same
                   way for every line style above.
+                </span>
+              </div>
+            </div>
+          )}
+
+          {frame === 'domain' && (
+            <div className="graph-legend-section">
+              <div className="graph-legend-heading">Edges</div>
+              <div className="graph-legend-row graph-legend-row--note">
+                <span className="graph-legend-line graph-legend-line--solid" aria-hidden="true" />
+                <span>
+                  One line per pair of domains, counting every relationship, interface and
+                  information flow between them. The arrowhead points at the dependent/consuming
+                  domain, the same way as in the application frame.
                 </span>
               </div>
             </div>

@@ -22,14 +22,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Computes the "blast radius" of an application: all upstream (feeding) and
- * downstream (dependent) applications reachable through relationships.
+ * Computes the "blast radius" of an application over the relationship graph:
+ * its <b>upstream</b> providers (everything it transitively depends on) and its
+ * <b>downstream</b> dependents (everything that transitively depends on it, and
+ * would be hit if it failed).
  *
- * <p>Uses directed traversal over the JGraphT graph produced by
- * {@link GraphBuilderService}: downstream follows edges in their natural
- * (source &rarr; target) direction, upstream follows them in reverse. Each
- * connecting edge is tagged with its relationship type
- * ({@code DEPENDS_ON}/{@code USES}).</p>
+ * <p>A relationship edge in the graph built by {@link GraphBuilderService} runs
+ * dependent &rarr; provider, exactly as recorded. So downstream is found by
+ * walking edges backwards (incoming, to their source) and upstream by walking
+ * them forwards (outgoing, to their target).</p>
  */
 @Slf4j
 @Service
@@ -66,13 +67,10 @@ public class ImpactAnalysisService {
 
         Set<RelationshipEdge> connectingEdges = new LinkedHashSet<>();
 
-        // Downstream: follow outgoing edges (source depends on -> target).
         Set<Application> downstream = traverse(origin, connectingEdges,
-                graph::outgoingEdgesOf, graph::getEdgeTarget);
-
-        // Upstream: follow incoming edges in reverse.
-        Set<Application> upstream = traverse(origin, connectingEdges,
                 graph::incomingEdgesOf, graph::getEdgeSource);
+        Set<Application> upstream = traverse(origin, connectingEdges,
+                graph::outgoingEdgesOf, graph::getEdgeTarget);
 
         Set<String> downstreamIds = ids(downstream);
         Set<String> upstreamIds = ids(upstream);
@@ -129,6 +127,12 @@ public class ImpactAnalysisService {
         return ids;
     }
 
+    /**
+     * Emitted provider &rarr; dependent — the reverse of the analytical graph,
+     * and the same direction {@link ApplicationEdgeAssembler} draws the edge
+     * with the same id — so a caller highlighting these edges on the rendered
+     * diagram sees them pointing the way they're drawn.
+     */
     private GraphEdge toGraphEdge(Graph<Application, RelationshipEdge> graph, RelationshipEdge edge) {
         Map<String, Object> data = GraphNode.attrs();
         data.put("dependencyCriticality",
@@ -136,8 +140,8 @@ public class ImpactAnalysisService {
         String typeName = edge.getRelationshipType() == null ? null : edge.getRelationshipType().name();
         return new GraphEdge(
                 edge.getRelationshipId(),
-                graph.getEdgeSource(edge).id(),
                 graph.getEdgeTarget(edge).id(),
+                graph.getEdgeSource(edge).id(),
                 typeName,
                 typeName,
                 data);

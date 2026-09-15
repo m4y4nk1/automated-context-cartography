@@ -64,7 +64,20 @@ public final class IngestionSupport {
 
     private static final List<DateTimeFormatter> DATE_FORMATS = List.of(
             DateTimeFormatter.ISO_LOCAL_DATE,
+            // A date exported with a time part, as JSON/CSV writers and databases
+            // commonly emit: "2026-01-15T00:00:00", "...Z", "2026-01-15 00:00:00".
+            DateTimeFormatter.ISO_DATE_TIME,
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm[:ss][.SSS]", Locale.ENGLISH),
             DateTimeFormatter.ofPattern("M/d/yyyy", Locale.ENGLISH),
+            // Spreadsheet short dates ("1/15/26"); two-digit years resolve to 1950-2049.
+            new java.time.format.DateTimeFormatterBuilder().appendPattern("M/d/")
+                    .appendValueReduced(java.time.temporal.ChronoField.YEAR, 2, 2, 1950)
+                    .toFormatter(Locale.ENGLISH),
+            // Day-first renderings. Month-first above wins whenever both readings
+            // are valid (03/04/2026); these only apply when the first number can't
+            // be a month.
+            DateTimeFormatter.ofPattern("d/M/yyyy", Locale.ENGLISH),
+            DateTimeFormatter.ofPattern("d.M.yyyy", Locale.ENGLISH),
             DateTimeFormatter.ofPattern("yyyy/MM/dd", Locale.ENGLISH),
             DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH));
 
@@ -318,6 +331,49 @@ public final class IngestionSupport {
             }
         }
         return cleanHeaders.isEmpty() ? null : bindTo(properties, entity, cleanHeaders, 1.0);
+    }
+
+    /**
+     * Every entity a source table should be read as.
+     *
+     * <p>A table explicitly named in configuration binds to every entity named
+     * for it (a mapping-style table can feed more than one). Otherwise the
+     * single best header-signature match is used — plus each configured
+     * {@code companion-entities} entry for that match whose own signature also
+     * clears {@code min-confidence}, so a renamed process-to-application mapping
+     * table still yields its business processes as well as its mapping rows.</p>
+     *
+     * @return the bindings; empty when nothing matched
+     */
+    public static List<TableBinding> resolveBindings(EaIngestionProperties properties, String tableName,
+                                                     List<String> headers) {
+        List<TableBinding> bindings = new ArrayList<>();
+        List<String> explicit = entitiesByTableName(properties, tableName);
+        if (!explicit.isEmpty()) {
+            for (String entity : explicit) {
+                TableBinding binding = bindEntity(properties, entity, headers);
+                if (binding != null) {
+                    bindings.add(binding);
+                }
+            }
+            return bindings;
+        }
+
+        TableBinding primary = bind(properties, tableName, headers);
+        if (primary == null) {
+            return bindings;
+        }
+        bindings.add(primary);
+        List<String> cleanHeaders = headers.stream().map(IngestionSupport::blankToNull).filter(h -> h != null).toList();
+        for (String companion : properties.companionEntities(primary.entity())) {
+            if (signatureScore(properties, companion, cleanHeaders) >= properties.getMatching().getMinConfidence()) {
+                TableBinding binding = bindEntity(properties, companion, headers);
+                if (binding != null) {
+                    bindings.add(binding);
+                }
+            }
+        }
+        return bindings;
     }
 
     /**

@@ -51,7 +51,14 @@ public class InsightService {
     public List<Finding> analyze(CanonicalModel model, Graph<Application, RelationshipEdge> graph) {
         List<Finding> findings = new ArrayList<>();
         for (Detector detector : detectors) {
-            findings.addAll(detector.detect(model, graph));
+            // One broken rule must not take the whole upload down with it: every
+            // other detector's findings, every frame and the validation report are
+            // still valid. The failure is logged at ERROR so it gets fixed.
+            try {
+                findings.addAll(detector.detect(model, graph));
+            } catch (RuntimeException e) {
+                log.error("Detector {} failed; its findings are omitted", detector.getClass().getSimpleName(), e);
+            }
         }
         log.info("Insight analysis produced {} finding(s) from {} detector(s)", findings.size(), detectors.size());
         return findings;

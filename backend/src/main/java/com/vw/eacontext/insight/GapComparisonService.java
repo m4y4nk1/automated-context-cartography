@@ -22,8 +22,16 @@ public class GapComparisonService {
     public GapComparison compare(CanonicalModel model, List<Finding> findings) {
         Set<String> declaredEntityIds = new HashSet<>();
         for (DataQualityGap gap : model.dataQualityGaps()) {
-            addIfPresent(declaredEntityIds, gap.entityId());
-            addIfPresent(declaredEntityIds, gap.relatedApplicationId());
+            // Matched on the specific offending record. RelatedApplicationID is
+            // only context: a broken relationship declared on REL-0065 relates to
+            // APP-0005, but that doesn't make every other finding touching
+            // APP-0005 — an undeclared dependency cycle, say — "declared" too.
+            // It's only used when a gap names no entity at all.
+            if (gap.entityId() != null && !gap.entityId().isBlank()) {
+                declaredEntityIds.add(gap.entityId());
+            } else {
+                addIfPresent(declaredEntityIds, gap.relatedApplicationId());
+            }
         }
 
         List<Finding> newlyDetected = findings.stream()

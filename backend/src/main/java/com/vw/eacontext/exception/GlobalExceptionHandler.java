@@ -76,6 +76,10 @@ public class GlobalExceptionHandler {
             MissingServletRequestPartException.class
     })
     public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
+        // Logged with its stack: an IllegalArgumentException can come from deep
+        // inside the pipeline (a library rejecting a data shape), not only from a
+        // malformed request, and would otherwise leave no trace server-side.
+        log.warn("Bad request: {}", ex.getMessage(), ex);
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

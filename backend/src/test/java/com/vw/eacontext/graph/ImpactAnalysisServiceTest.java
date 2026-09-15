@@ -40,13 +40,14 @@ class ImpactAnalysisServiceTest {
     void computesUpstreamAndDownstreamBlastRadius() {
         ImpactAnalysisResult result = impactAnalysisService.impactAnalysis(model, "APP-BILL");
 
-        // Downstream: BILL -> {OMS, ERP -> MDM}; MDM's own edges lead back to
-        // already-visited nodes (OMS, BILL) so they add nothing further.
-        assertThat(result.downstream()).containsExactlyInAnyOrder("APP-OMS", "APP-ERP", "APP-MDM");
+        // Upstream = what BILL depends on: BILL -> {OMS, ERP -> MDM}; MDM's own
+        // dependencies lead back to already-visited nodes (OMS, BILL).
+        assertThat(result.upstream()).containsExactlyInAnyOrder("APP-OMS", "APP-ERP", "APP-MDM");
 
-        // Upstream: MDM -> BILL, MDM fed by ERP and DUPLICATE-B; ERP is also fed
-        // by BILL itself, which is already visited as the origin.
-        assertThat(result.upstream()).containsExactlyInAnyOrder("APP-MDM", "APP-ERP", "APP-DUPLICATE-B");
+        // Downstream = what depends on BILL and would break with it: MDM depends
+        // on BILL; ERP and DUPLICATE-B depend on MDM; BILL itself depends-on-ERP
+        // closes the loop at the already-visited origin.
+        assertThat(result.downstream()).containsExactlyInAnyOrder("APP-MDM", "APP-ERP", "APP-DUPLICATE-B");
 
         assertThat(result.affected()).containsExactlyInAnyOrder(
                 "APP-BILL", "APP-OMS", "APP-ERP", "APP-MDM", "APP-DUPLICATE-B");
@@ -56,13 +57,25 @@ class ImpactAnalysisServiceTest {
     }
 
     @Test
-    void hubHasNoDownstream() {
+    void hubHasNoUpstreamButEverythingDependingOnItIsDownstream() {
         // APP-OMS is a pure hub: everything depends on it, but it depends on nothing.
         ImpactAnalysisResult result = impactAnalysisService.impactAnalysis(model, "APP-OMS");
 
-        assertThat(result.downstream()).isEmpty();
-        assertThat(result.upstream()).isNotEmpty();
+        assertThat(result.upstream()).isEmpty();
+        assertThat(result.downstream()).contains(
+                "APP-CRM", "APP-PRICING", "APP-PORTAL", "APP-MDM", "APP-BILL", "APP-LEGACY", "APP-DUPLICATE-A");
         assertThat(result.affected()).contains("APP-OMS");
+    }
+
+    @Test
+    void edgesPointFromProviderToDependentLikeTheRenderedDiagram() {
+        // REL-005 is recorded as APP-BILL (dependent) depends on APP-OMS (provider).
+        ImpactAnalysisResult result = impactAnalysisService.impactAnalysis(model, "APP-BILL");
+
+        GraphEdge billOnOms = result.edges().stream()
+                .filter(e -> "REL-005".equals(e.id())).findFirst().orElseThrow();
+        assertThat(billOnOms.source()).isEqualTo("APP-OMS");
+        assertThat(billOnOms.target()).isEqualTo("APP-BILL");
     }
 
     @Test

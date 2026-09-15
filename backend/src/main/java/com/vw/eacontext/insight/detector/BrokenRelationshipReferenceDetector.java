@@ -17,7 +17,10 @@ import com.vw.eacontext.model.CanonicalModel;
 import com.vw.eacontext.model.Relationship;
 import com.vw.eacontext.validation.Severity;
 
-/** A {@link Relationship} whose target application is a ghost reference. */
+/**
+ * A {@link Relationship} whose source or target application is a ghost
+ * reference — either end can be the broken one. One finding per record.
+ */
 @Component
 public class BrokenRelationshipReferenceDetector implements Detector {
 
@@ -26,14 +29,24 @@ public class BrokenRelationshipReferenceDetector implements Detector {
         Set<String> applicationIds = DetectorSupport.applicationIds(model);
         List<Finding> findings = new ArrayList<>();
         for (Relationship relationship : model.relationships()) {
-            IngestionSupport.ReferenceCheck check =
+            IngestionSupport.ReferenceCheck source =
+                    IngestionSupport.resolveReference(relationship.sourceApplicationId(), applicationIds);
+            IngestionSupport.ReferenceCheck target =
                     IngestionSupport.resolveReference(relationship.targetApplicationId(), applicationIds);
-            if (check.ghost()) {
-                findings.add(new Finding(FindingType.BROKEN_RELATIONSHIP_REFERENCE, Severity.ERROR,
-                        DetectorSupport.ids(relationship.id(), relationship.sourceApplicationId()),
-                        "Relationship '" + relationship.id() + "' targets unknown application '"
-                                + check.id() + "'"));
+            if (!source.ghost() && !target.ghost()) {
+                continue;
             }
+            List<String> unknown = new ArrayList<>();
+            if (source.ghost()) {
+                unknown.add("source application '" + source.id() + "'");
+            }
+            if (target.ghost()) {
+                unknown.add("target application '" + target.id() + "'");
+            }
+            findings.add(new Finding(FindingType.BROKEN_RELATIONSHIP_REFERENCE, Severity.ERROR,
+                    DetectorSupport.ids(relationship.id(),
+                            source.present() ? source.id() : null, target.present() ? target.id() : null),
+                    "Relationship '" + relationship.id() + "' references unknown " + String.join(" and ", unknown)));
         }
         return findings;
     }

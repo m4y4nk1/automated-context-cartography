@@ -107,28 +107,9 @@ public class JsonEaDataParser implements EaDataParser {
                         .map(IngestionSupport.TableBinding::entity).toList());
     }
 
-    /**
-     * Resolves every entity type an array should be read as: entities
-     * explicitly named to this array in configuration (a mapping array may name
-     * more than one), otherwise the single best heuristic match.
-     */
+    /** Every entity type an array should be read as — see {@link IngestionSupport#resolveBindings}. */
     private List<IngestionSupport.TableBinding> resolveBindings(String arrayName, List<String> headers) {
-        List<String> explicit = IngestionSupport.entitiesByTableName(properties, arrayName);
-        List<IngestionSupport.TableBinding> bindings = new ArrayList<>();
-        if (!explicit.isEmpty()) {
-            for (String entity : explicit) {
-                IngestionSupport.TableBinding binding = IngestionSupport.bindEntity(properties, entity, headers);
-                if (binding != null) {
-                    bindings.add(binding);
-                }
-            }
-        } else {
-            IngestionSupport.TableBinding binding = IngestionSupport.bind(properties, arrayName, headers);
-            if (binding != null) {
-                bindings.add(binding);
-            }
-        }
-        return bindings;
+        return IngestionSupport.resolveBindings(properties, arrayName, headers);
     }
 
     /** Union of property names across a bounded sample of the array's objects. */

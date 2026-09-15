@@ -53,6 +53,14 @@ public class EaIngestionProperties {
      */
     private Map<String, List<String>> requiredFields = new LinkedHashMap<>();
 
+    /**
+     * Entities that can share one physical table: {@code entity -> [companion, ...]}.
+     * When a table is recognized by its headers as {@code entity}, each companion
+     * whose own header signature also clears {@link Matching#getMinConfidence()}
+     * is bound from the same rows (see {@code IngestionSupport.resolveBindings}).
+     */
+    private Map<String, List<String>> companionEntities = new LinkedHashMap<>();
+
     /** Heuristic entity-detection tuning. */
     private Matching matching = new Matching();
 
@@ -126,6 +134,11 @@ public class EaIngestionProperties {
     /** Model fields configured as required for an entity (see {@link #requiredFields}). */
     public List<String> requiredFields(String entity) {
         return requiredFields.getOrDefault(entity, List.of());
+    }
+
+    /** Entities configured to share a table with {@code entity} (see {@link #companionEntities}). */
+    public List<String> companionEntities(String entity) {
+        return companionEntities.getOrDefault(entity, List.of());
     }
 
     /** Heuristic matching thresholds for schema-agnostic table detection. */

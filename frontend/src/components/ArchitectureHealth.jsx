@@ -22,7 +22,7 @@ const ISSUE_LABELS = {
   HUB: 'Hubs',
   CIRCULAR_DEPENDENCY: 'Circular dependencies',
   BROKEN_RELATIONSHIP_REFERENCE: 'Broken relationships',
-  DANGLING_INTERFACE_CONSUMER: 'Dangling interface consumers',
+  DANGLING_INTERFACE_CONSUMER: 'Dangling interfaces',
   BROKEN_INFORMATION_FLOW_REFERENCE: 'Broken information flows',
   UNMAPPED_PROCESS_APPLICATION: 'Unmapped process applications',
   DUPLICATE_APPLICATION: 'Duplicate applications',
